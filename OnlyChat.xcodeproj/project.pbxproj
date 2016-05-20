@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		36459BC340C0EEBA28058DEB /* Pods_OnlyChat.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3BC2A52B4329DE9D25020585 /* Pods_OnlyChat.framework */; };
+		962F51291CEF100F007E5F20 /* DataStructure.swift in Sources */ = {isa = PBXBuildFile; fileRef = 962F51281CEF100F007E5F20 /* DataStructure.swift */; };
+		962F512C1CEF39EA007E5F20 /* SystemExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 962F512B1CEF39EA007E5F20 /* SystemExtensions.swift */; };
+		962F51301CEF4872007E5F20 /* RegistrationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 962F512F1CEF4872007E5F20 /* RegistrationViewController.swift */; };
 		965ED92A1CEDEC950068CB29 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 965ED9291CEDEC950068CB29 /* AppDelegate.swift */; };
 		965ED92C1CEDEC950068CB29 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 965ED92B1CEDEC950068CB29 /* ViewController.swift */; };
 		965ED92F1CEDEC950068CB29 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 965ED92D1CEDEC950068CB29 /* Main.storyboard */; };
@@ -34,6 +38,12 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		2DF949C213A81D1408475A11 /* Pods-OnlyChat.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-OnlyChat.debug.xcconfig"; path = "Pods/Target Support Files/Pods-OnlyChat/Pods-OnlyChat.debug.xcconfig"; sourceTree = "<group>"; };
+		3BC2A52B4329DE9D25020585 /* Pods_OnlyChat.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_OnlyChat.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		3BEDE509EFDC87F2A56307D5 /* Pods-OnlyChat.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-OnlyChat.release.xcconfig"; path = "Pods/Target Support Files/Pods-OnlyChat/Pods-OnlyChat.release.xcconfig"; sourceTree = "<group>"; };
+		962F51281CEF100F007E5F20 /* DataStructure.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataStructure.swift; sourceTree = "<group>"; };
+		962F512B1CEF39EA007E5F20 /* SystemExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SystemExtensions.swift; sourceTree = "<group>"; };
+		962F512F1CEF4872007E5F20 /* RegistrationViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RegistrationViewController.swift; sourceTree = "<group>"; };
 		965ED9261CEDEC950068CB29 /* OnlyChat.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OnlyChat.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		965ED9291CEDEC950068CB29 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		965ED92B1CEDEC950068CB29 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -54,6 +64,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				36459BC340C0EEBA28058DEB /* Pods_OnlyChat.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -74,6 +85,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		7EDDF3E3F927AB974B3BC930 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				3BC2A52B4329DE9D25020585 /* Pods_OnlyChat.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		965ED91D1CEDEC950068CB29 = {
 			isa = PBXGroup;
 			children = (
@@ -81,6 +100,8 @@
 				965ED93D1CEDEC950068CB29 /* OnlyChatTests */,
 				965ED9481CEDEC950068CB29 /* OnlyChatUITests */,
 				965ED9271CEDEC950068CB29 /* Products */,
+				F43D897D865D36B89740D95E /* Pods */,
+				7EDDF3E3F927AB974B3BC930 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -103,6 +124,9 @@
 				965ED9301CEDEC950068CB29 /* Assets.xcassets */,
 				965ED9321CEDEC950068CB29 /* LaunchScreen.storyboard */,
 				965ED9351CEDEC950068CB29 /* Info.plist */,
+				962F51281CEF100F007E5F20 /* DataStructure.swift */,
+				962F512B1CEF39EA007E5F20 /* SystemExtensions.swift */,
+				962F512F1CEF4872007E5F20 /* RegistrationViewController.swift */,
 			);
 			path = OnlyChat;
 			sourceTree = "<group>";
@@ -125,6 +149,15 @@
 			path = OnlyChatUITests;
 			sourceTree = "<group>";
 		};
+		F43D897D865D36B89740D95E /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				2DF949C213A81D1408475A11 /* Pods-OnlyChat.debug.xcconfig */,
+				3BEDE509EFDC87F2A56307D5 /* Pods-OnlyChat.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -132,9 +165,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 965ED94E1CEDEC950068CB29 /* Build configuration list for PBXNativeTarget "OnlyChat" */;
 			buildPhases = (
+				5CE4786F4854AC3623A37F08 /* 📦 Check Pods Manifest.lock */,
 				965ED9221CEDEC950068CB29 /* Sources */,
 				965ED9231CEDEC950068CB29 /* Frameworks */,
 				965ED9241CEDEC950068CB29 /* Resources */,
+				2C9AF806899F31CFCEEF5686 /* 📦 Embed Pods Frameworks */,
+				6A60439052A0D7BEBF433CB0 /* 📦 Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -254,13 +290,64 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		2C9AF806899F31CFCEEF5686 /* 📦 Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "📦 Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-OnlyChat/Pods-OnlyChat-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		5CE4786F4854AC3623A37F08 /* 📦 Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "📦 Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		6A60439052A0D7BEBF433CB0 /* 📦 Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "📦 Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-OnlyChat/Pods-OnlyChat-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		965ED9221CEDEC950068CB29 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				962F51291CEF100F007E5F20 /* DataStructure.swift in Sources */,
 				965ED92C1CEDEC950068CB29 /* ViewController.swift in Sources */,
+				962F512C1CEF39EA007E5F20 /* SystemExtensions.swift in Sources */,
 				965ED92A1CEDEC950068CB29 /* AppDelegate.swift in Sources */,
+				962F51301CEF4872007E5F20 /* RegistrationViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -400,6 +487,7 @@
 		};
 		965ED94F1CEDEC950068CB29 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 2DF949C213A81D1408475A11 /* Pods-OnlyChat.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = OnlyChat/Info.plist;
@@ -411,6 +499,7 @@
 		};
 		965ED9501CEDEC950068CB29 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 3BEDE509EFDC87F2A56307D5 /* Pods-OnlyChat.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = OnlyChat/Info.plist;
@@ -485,6 +574,7 @@
 				965ED9501CEDEC950068CB29 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		965ED9511CEDEC950068CB29 /* Build configuration list for PBXNativeTarget "OnlyChatTests" */ = {
 			isa = XCConfigurationList;
@@ -493,6 +583,7 @@
 				965ED9531CEDEC950068CB29 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		965ED9541CEDEC950068CB29 /* Build configuration list for PBXNativeTarget "OnlyChatUITests" */ = {
 			isa = XCConfigurationList;
@@ -501,6 +592,7 @@
 				965ED9561CEDEC950068CB29 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
