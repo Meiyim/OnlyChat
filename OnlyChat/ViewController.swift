@@ -67,9 +67,12 @@ class ViewController: JSQMessagesViewController {
             self.collectionView?.reloadData()
             self.collectionView?.layoutIfNeeded()
         }else{
-            senderId = "None"
+            //show registration page
+            senderId = "None";
             senderDisplayName = "";
-            performSegueWithIdentifier("showRegister", sender: self)
+            doAfterDelay(1){
+                self.performSegueWithIdentifier("showRegister", sender: self)
+            }
         }
     
     }

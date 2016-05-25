@@ -14,3 +14,31 @@ func documentDirectory() -> String {
 func dataFilePath()->String {
     return documentDirectory()+"/Schedules.plist"
 }
+func doAfterDelay(seconds: Double, closure: ()->()){ // GCD framework!
+    let when = dispatch_time(DISPATCH_TIME_NOW, Int64(seconds * Double(NSEC_PER_SEC)));
+    dispatch_after(when, dispatch_get_main_queue(), closure);
+}
+
+
+class Regex {
+    let internalExpression:NSRegularExpression
+    let pattern:String
+    
+    init(pattern:String) {
+        self.pattern = pattern
+        try! self.internalExpression = NSRegularExpression(pattern: pattern, options: NSRegularExpressionOptions.CaseInsensitive)
+
+    }
+    
+    func match(input:String) -> Bool {
+        let matches = self.internalExpression.matchesInString(input, options: NSMatchingOptions.Anchored, range: NSMakeRange(0, input.characters.count))
+        return matches.count > 0
+    }
+}
+
+extension String {
+    func isEmail() -> Bool {
+        let regex = Regex(pattern:"^[a-zA-Z0-9]+([._\\-])*[a-zA-Z0-9]*@([a-zA-Z0-9])+(.([a-zA-Z])+)+$");
+        return regex.match(self);
+    }
+}

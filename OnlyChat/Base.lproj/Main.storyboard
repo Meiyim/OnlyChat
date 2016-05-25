@@ -44,6 +44,19 @@
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="ZCF-RW-FYc" id="5K6-n8-qUF">
                                             <rect key="frame" x="0.0" y="0.0" width="600" height="43"/>
                                             <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="输入email地址" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="PC6-ug-W3y">
+                                                    <rect key="frame" x="0.0" y="0.0" width="600" height="43"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                                    <textInputTraits key="textInputTraits"/>
+                                                </textField>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstItem="PC6-ug-W3y" firstAttribute="top" secondItem="5K6-n8-qUF" secondAttribute="top" id="HSZ-ae-o9P"/>
+                                                <constraint firstItem="PC6-ug-W3y" firstAttribute="leading" secondItem="5K6-n8-qUF" secondAttribute="leading" id="HvE-75-bcJ"/>
+                                                <constraint firstAttribute="trailing" secondItem="PC6-ug-W3y" secondAttribute="trailing" id="Yp6-hm-9GC"/>
+                                                <constraint firstAttribute="bottom" secondItem="PC6-ug-W3y" secondAttribute="bottom" id="n73-aa-jJg"/>
+                                            </constraints>
                                         </tableViewCellContentView>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" textLabel="Jvt-zp-RDg" style="IBUITableViewCellStyleDefault" id="j9x-rj-3ja">
@@ -65,10 +78,35 @@
                                     </tableViewCell>
                                 </cells>
                             </tableViewSection>
+                            <tableViewSection id="KoY-Cx-xjh">
+                                <cells>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="q9i-Ly-2yc">
+                                        <rect key="frame" x="0.0" y="238" width="600" height="44"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="q9i-Ly-2yc" id="lrO-JT-hvC">
+                                            <rect key="frame" x="0.0" y="0.0" width="600" height="43"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="昵称~" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="3Pp-AN-4La">
+                                                    <rect key="frame" x="0.0" y="0.0" width="600" height="43"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                                    <textInputTraits key="textInputTraits"/>
+                                                </textField>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstItem="3Pp-AN-4La" firstAttribute="leading" secondItem="lrO-JT-hvC" secondAttribute="leading" id="44t-gr-23A"/>
+                                                <constraint firstAttribute="trailing" secondItem="3Pp-AN-4La" secondAttribute="trailing" id="SrG-yI-R9e"/>
+                                                <constraint firstItem="3Pp-AN-4La" firstAttribute="top" secondItem="lrO-JT-hvC" secondAttribute="top" id="kHX-p7-n1T"/>
+                                                <constraint firstAttribute="bottom" secondItem="3Pp-AN-4La" secondAttribute="bottom" id="wxP-vM-HSk"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                </cells>
+                            </tableViewSection>
                             <tableViewSection id="m83-Dm-OAc">
                                 <cells>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="mfu-fX-sef">
-                                        <rect key="frame" x="0.0" y="238" width="600" height="44"/>
+                                        <rect key="frame" x="0.0" y="318" width="600" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="mfu-fX-sef" id="4rX-81-MQC">
                                             <rect key="frame" x="0.0" y="0.0" width="600" height="43"/>
@@ -93,7 +131,7 @@
                             <tableViewSection id="Ous-iE-ZuH">
                                 <cells>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" textLabel="ivQ-vh-WPe" detailTextLabel="u8I-ge-LKx" style="IBUITableViewCellStyleValue1" id="dIU-sY-QpT">
-                                        <rect key="frame" x="0.0" y="318" width="600" height="44"/>
+                                        <rect key="frame" x="0.0" y="398" width="600" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="dIU-sY-QpT" id="lcf-zM-4bs">
                                             <rect key="frame" x="0.0" y="0.0" width="600" height="43"/>
@@ -103,7 +141,7 @@
                                                     <rect key="frame" x="15" y="12" width="48" height="20"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="16"/>
-                                                    <color key="textColor" red="0.0" green="0.0" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                                    <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Detail" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="u8I-ge-LKx">
@@ -131,6 +169,11 @@
                             </connections>
                         </barButtonItem>
                     </navigationItem>
+                    <connections>
+                        <outlet property="displayNameTextField" destination="3Pp-AN-4La" id="RgW-3T-htD"/>
+                        <outlet property="emailTextField" destination="PC6-ug-W3y" id="CJG-n9-uyJ"/>
+                        <outlet property="varificationCodeTextField" destination="4H4-yy-R8d" id="oge-Ft-WrI"/>
+                    </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="uTv-ni-qFv" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
