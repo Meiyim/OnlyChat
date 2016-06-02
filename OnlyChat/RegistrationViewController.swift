@@ -25,7 +25,26 @@ class RegistrationViewController: UITableViewController {
     @IBAction func cancel(sender: UIBarButtonItem){
         dismissViewControllerAnimated(true, completion: nil);
     }
+    
+    //MARK: - utility
+    private func parseJSON(data: NSData) -> [String: AnyObject]? {
+        do{
+            let ret =  try NSJSONSerialization.JSONObjectWithData(data, options:NSJSONReadingOptions(rawValue: 0)) as? [String: AnyObject];
+            return ret;
+        
+        }catch{
+            print("cannot parse retrun json");
+        }
+        
 
+        return nil
+    }
+    private func showAlert(title: String, OKButton: String,handler: ((UIAlertAction)->())?){
+        let alert = UIAlertController(title: title, message: "", preferredStyle: .Alert) //i18n
+        let action1 = UIAlertAction(title: OKButton, style: .Destructive, handler: handler)
+        alert.addAction(action1)
+        presentViewController(alert, animated: true, completion: nil);
+    }
     
     //MARK: - View
     override func viewDidLoad() {
@@ -59,7 +78,7 @@ class RegistrationViewController: UITableViewController {
         varificationCodeSent = false;
         
         let request = getPostHttpRequest();
-        let param = String(format: "id=%@",id);
+        let param = String(format: "request=%@&id=%@","code",id);
         let body = param.dataUsingEncoding(NSUTF8StringEncoding)
         request.HTTPBody = body;
 
@@ -70,8 +89,20 @@ class RegistrationViewController: UITableViewController {
                 print("http request wrong err:\(err.localizedDescription)");
             }else if let httpResponse = response as? NSHTTPURLResponse {
                 if httpResponse.statusCode == 200 {
-                    print("good request: \(data!)");
-                    self.varificationCodeSent = true;
+                    let answer = self.parseJSON(data!)!["response"] as! String;
+                    print(answer);
+                    switch(answer){
+                    case "codeSent":
+                        self.varificationCodeSent = true;
+                        self.updateUI();
+                        return;
+                    case "emailTaken":
+                        self.showAlert("Email address has been taken!", OKButton: "OK", handler: nil)
+                    case "emailInvalid":
+                        self.showAlert("illegal email address, pls check your spelling", OKButton: "OK", handler: nil)
+                    default:
+                        self.showAlert("something is wrong with the server: \(answer)", OKButton: "OK", handler: nil)
+                    }
                 }
                 
             }
@@ -81,7 +112,7 @@ class RegistrationViewController: UITableViewController {
     }
     private func registerForID(id:String, displayName:String, varificationCode: String){
         let registerRequest = getPostHttpRequest();
-        let param = String(format: "id=%@ ,name=%@, code=%@",id,displayName,varificationCode);
+        let param = String(format: "reques=%@&id=%@&name=%@&code=%@","register",id,displayName,varificationCode);
         let body = param.dataUsingEncoding(NSUTF8StringEncoding)!
         registerRequest.HTTPBody = body;
         registrationTask = NSURLSession.sharedSession().dataTaskWithRequest(registerRequest, completionHandler: {
@@ -116,32 +147,40 @@ class RegistrationViewController: UITableViewController {
             tableView.deselectRowAtIndexPath(indexPath, animated: true)
         }
         if indexPath == indexPathForRegister {
-            guard let code = varificationCodeTextField.text else {
-                //show warning
+            guard var code = varificationCodeTextField.text else {
+                showAlert("please input varification code", OKButton: "OK", handler: nil)
+                return
+            }
+            code = code.uppercaseString
+            if code.characters.count != 6 {
+                showAlert("varification code should be 6 characters", OKButton: "OK", handler: nil)
                 return
             }
             guard let name = displayNameTextField.text else{
-                //show warning
+                showAlert("please input your nickname", OKButton: "OK", handler: nil)
                 return
             }
             assert(emailTextField.text != nil)
             registerForID(emailTextField.text!, displayName: name, varificationCode: code)
-            
+            emailTextField.enabled = true;
+            emailTextField.textColor = self.view.tintColor;
         }else if indexPath == indexPathForSendCode{
             guard let id = emailTextField.text else {
-                //show warning
+                showAlert("please enter your email", OKButton: "OK", handler: nil)
                 return;
             }
             if !id.isEmail() {
-                //show warning
+                showAlert("illegal email", OKButton: "OK", handler: nil)
                 return;
             }
             askServerForVarificationCode(id );
+            emailTextField.enabled = false;
+            emailTextField.textColor = UIColor.grayColor();
             print("ask server for code, email: \(id)");
         }
     }
     override func tableView(tableView: UITableView, willSelectRowAtIndexPath indexPath: NSIndexPath) -> NSIndexPath? {
-        if !varificationCodeSent && indexPath.section == 3 && indexPath.row == 0 {
+        if !varificationCodeSent && indexPath == indexPathForRegister {
             return nil
         }
         return indexPath;

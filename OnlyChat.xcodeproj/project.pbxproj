@@ -18,6 +18,7 @@
 		965ED9341CEDEC950068CB29 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 965ED9321CEDEC950068CB29 /* LaunchScreen.storyboard */; };
 		965ED93F1CEDEC950068CB29 /* OnlyChatTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 965ED93E1CEDEC950068CB29 /* OnlyChatTests.swift */; };
 		965ED94A1CEDEC950068CB29 /* OnlyChatUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 965ED9491CEDEC950068CB29 /* OnlyChatUITests.swift */; };
+		96F8E1521D002E30001A2B26 /* python in Resources */ = {isa = PBXBuildFile; fileRef = 96F8E1511D002E30001A2B26 /* python */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -57,6 +58,7 @@
 		965ED9451CEDEC950068CB29 /* OnlyChatUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = OnlyChatUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		965ED9491CEDEC950068CB29 /* OnlyChatUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnlyChatUITests.swift; sourceTree = "<group>"; };
 		965ED94B1CEDEC950068CB29 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		96F8E1511D002E30001A2B26 /* python */ = {isa = PBXFileReference; lastKnownFileType = folder; path = python; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -118,6 +120,7 @@
 		965ED9281CEDEC950068CB29 /* OnlyChat */ = {
 			isa = PBXGroup;
 			children = (
+				96F8E1511D002E30001A2B26 /* python */,
 				965ED9291CEDEC950068CB29 /* AppDelegate.swift */,
 				965ED92B1CEDEC950068CB29 /* ViewController.swift */,
 				965ED92D1CEDEC950068CB29 /* Main.storyboard */,
@@ -268,6 +271,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				96F8E1521D002E30001A2B26 /* python in Resources */,
 				965ED9341CEDEC950068CB29 /* LaunchScreen.storyboard in Resources */,
 				965ED9311CEDEC950068CB29 /* Assets.xcassets in Resources */,
 				965ED92F1CEDEC950068CB29 /* Main.storyboard in Resources */,
