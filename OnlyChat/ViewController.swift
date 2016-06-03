@@ -12,15 +12,18 @@ import Starscream
 
 enum MainViewControllerStatus{
     case Unregistered
-    case Disconnected
+    //case below means registered
     case Unpaired
+    case Disconnected  //ws disconnected
     case Good
 }
 
+
+
 class ViewController: JSQMessagesViewController {
     var messages = [JSQMessage]()
-    var conversation : Conversation! = nil;
-    var status = MainViewControllerStatus.Disconnected;
+    weak var conversation : Conversation! = nil;
+    var status = MainViewControllerStatus.Unregistered;
     
     //var shouldUseTempBubble = false;
     
@@ -51,12 +54,17 @@ class ViewController: JSQMessagesViewController {
         // Anywhere that AvatarIDWoz is used you should replace with you currentUserVariable
         automaticallyScrollsToMostRecentMessage = true
 
-        
-        if(conversation != nil){
-            senderId = conversation.remote?.id;
-            senderDisplayName = conversation.remote?.displayName;
+        if let local = conversation.local {
+            senderId = local.id;
+            senderDisplayName = local.displayName;
+            guard let remote = conversation.remote else{
+                status = .Unpaired
+                updateStatus()
+                return;
+            }
+            //update remote status
             
-            //network checking...
+            //websocket connect
             overseer.socket.connect();
             if !overseer.socket.isConnected {
                 showBadNetworkIndicator();
@@ -68,18 +76,36 @@ class ViewController: JSQMessagesViewController {
             self.collectionView?.layoutIfNeeded()
         }else{
             //show registration page
+            status = .Unregistered;
             senderId = "None";
             senderDisplayName = "";
-            doAfterDelay(1){
-                self.performSegueWithIdentifier("showRegister", sender: self)
-            }
+            updateStatus()
+
         }
     
     }
+    private func showAlert(title: String, OKButton: String,handler: ((UIAlertAction)->())?){
+        let alert = UIAlertController(title: title, message: "", preferredStyle: .Alert) //i18n
+        let action1 = UIAlertAction(title: OKButton, style: .Destructive, handler: handler)
+        alert.addAction(action1)
+        presentViewController(alert, animated: true, completion: nil);
+    }
+    
     func updateStatus(){
         switch status {
         case .Unregistered:
             //show a registration guide
+            showAlert("please register first", OKButton: "OK", handler: {
+                _ in
+                self.performSegueWithIdentifier("showRegister", sender: self)
+            })
+            break;
+        case .Unpaired:
+            //show reconnection guide
+            showAlert("please register first", OKButton: "OK", handler: {
+                _ in
+                self.performSegueWithIdentifier("showPair", sender: self)
+            })
             break;
         default:
             break;
@@ -176,6 +202,19 @@ extension ViewController :WebSocketDelegate {
     }
     
     func websocketDidReceiveData(ws: WebSocket, data: NSData) {
+        
+    }
+}
+
+
+extension ViewController: RegistrationViewControllerDelegate{
+    func registrationViewController(controller: RegistrationViewController,registerID: String, registerName: String){
+        self.status = .Unpaired;
+        senderId = registerID;
+        senderDisplayName = registerName;
+        conversation.local = LoginID(id: registerID, name: registerName)
+        
+        performSegueWithIdentifier("", sender: self);
         
     }
 }

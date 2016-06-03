@@ -8,11 +8,16 @@
 
 import UIKit
 
+protocol RegistrationViewControllerDelegate{
+    func registrationViewController(controller: RegistrationViewController,registerID: String, registerName: String);
+}
+
 class RegistrationViewController: UITableViewController {
     
     let indexPathForSendCode = NSIndexPath(forRow: 1, inSection: 0);
     let indexPathForRegister = NSIndexPath(forRow: 0, inSection: 3);
     
+    var delegate: RegistrationViewControllerDelegate?
 
     var registrationTask: NSURLSessionDataTask? = nil;
     
@@ -64,13 +69,26 @@ class RegistrationViewController: UITableViewController {
     }
     
     func updateUI(){
-        let cell = tableView.dataSource?.tableView(tableView, cellForRowAtIndexPath: NSIndexPath(forRow: 3, inSection: 0 ));
+        let cell1 = tableView.dataSource!.tableView(tableView, cellForRowAtIndexPath:indexPathForRegister);
+        let cell2 = tableView.dataSource!.tableView(tableView, cellForRowAtIndexPath:indexPathForSendCode);
+
         if varificationCodeSent {
-                cell?.textLabel?.textColor = self.view.tintColor;
+            cell1.textLabel!.textColor = self.view.tintColor;
+            cell2.textLabel!.textColor = UIColor.grayColor();
+            self.emailTextField.resignFirstResponder();
+            self.emailTextField.enabled = false;
+            self.emailTextField.textColor = UIColor.grayColor();
+            
         }else{
-                cell?.textLabel?.textColor = UIColor.grayColor()
+            cell1.textLabel!.textColor = UIColor.grayColor()
+            cell2.textLabel!.textColor = self.view.tintColor;
+            emailTextField.enabled = true;
+            emailTextField.textColor = UIColor.blackColor();
+            displayNameTextField.text = ""
+            varificationCodeTextField.text = ""
         }
-        
+        //tableView.reloadRowsAtIndexPaths([indexPathForRegister], withRowAnimation: .Fade);
+        print("ui updated")
     }
 
     // MAKR: - HTTP request
@@ -91,28 +109,32 @@ class RegistrationViewController: UITableViewController {
                 if httpResponse.statusCode == 200 {
                     let answer = self.parseJSON(data!)!["response"] as! String;
                     print(answer);
-                    switch(answer){
-                    case "codeSent":
-                        self.varificationCodeSent = true;
-                        self.updateUI();
-                        return;
-                    case "emailTaken":
-                        self.showAlert("Email address has been taken!", OKButton: "OK", handler: nil)
-                    case "emailInvalid":
-                        self.showAlert("illegal email address, pls check your spelling", OKButton: "OK", handler: nil)
-                    default:
-                        self.showAlert("something is wrong with the server: \(answer)", OKButton: "OK", handler: nil)
+                    dispatch_async(dispatch_get_main_queue()) {
+                        UIApplication.sharedApplication().networkActivityIndicatorVisible = false
+                        switch(answer){
+                        case "codeSent":
+                            self.varificationCodeSent = true;
+                            self.updateUI();
+                            return;
+                        case "emailTaken":
+                            self.showAlert("Email address has been taken!", OKButton: "OK", handler: nil)
+                        case "emailInvalid":
+                            self.showAlert("illegal email address, pls check your spelling", OKButton: "OK", handler: nil)
+                        default:
+                            self.showAlert("something is wrong with the server: \(answer)", OKButton: "OK", handler: nil)
+                        }
                     }
                 }
                 
             }
         })
+        UIApplication.sharedApplication().networkActivityIndicatorVisible = true
         registrationTask?.resume();
         
     }
     private func registerForID(id:String, displayName:String, varificationCode: String){
         let registerRequest = getPostHttpRequest();
-        let param = String(format: "reques=%@&id=%@&name=%@&code=%@","register",id,displayName,varificationCode);
+        let param = String(format: "request=%@&id=%@&name=%@&code=%@","register",id,displayName,varificationCode);
         let body = param.dataUsingEncoding(NSUTF8StringEncoding)!
         registerRequest.HTTPBody = body;
         registrationTask = NSURLSession.sharedSession().dataTaskWithRequest(registerRequest, completionHandler: {
@@ -122,13 +144,34 @@ class RegistrationViewController: UITableViewController {
                 print("http request wrong err:\(err.localizedDescription)");
             }else if let httpResponse = response as? NSHTTPURLResponse {
                 if httpResponse.statusCode == 200 {
-                    print("good request: \(httpResponse)");
+                    let answer = self.parseJSON(data!)!["response"] as! String;
+                    print(answer);
+                    dispatch_async(dispatch_get_main_queue()) {
+                        UIApplication.sharedApplication().networkActivityIndicatorVisible = false
+                        switch(answer){
+                        case "registed":
+                            //self.showAlert("Registration Suceeded, Welcome initiate", OKButton: "OK", handler: nil)
+                            self.dismissViewControllerAnimated(true, completion: {
+                                _ in
+                                self.delegate?.registrationViewController(self,registerID: id, registerName:  displayName);
+                            })
+                        case "codeWrong":
+                            self.showAlert("Invalide Varification Code", OKButton: "OK", handler: nil)
+                        case "nameWrong":
+                            self.showAlert("Invalide nick name", OKButton: "OK", handler: nil)
+
+                        default:
+                            self.showAlert("something is wrong with the server: \(answer)", OKButton: "OK", handler: nil)
+                        }
+                        self.varificationCodeSent = false;
+                        self.updateUI();
+                    }
                 }
             }
             
             
         })
-        
+        UIApplication.sharedApplication().networkActivityIndicatorVisible = true
         registrationTask?.resume();
     }
     
@@ -162,8 +205,6 @@ class RegistrationViewController: UITableViewController {
             }
             assert(emailTextField.text != nil)
             registerForID(emailTextField.text!, displayName: name, varificationCode: code)
-            emailTextField.enabled = true;
-            emailTextField.textColor = self.view.tintColor;
         }else if indexPath == indexPathForSendCode{
             guard let id = emailTextField.text else {
                 showAlert("please enter your email", OKButton: "OK", handler: nil)
@@ -174,13 +215,14 @@ class RegistrationViewController: UITableViewController {
                 return;
             }
             askServerForVarificationCode(id );
-            emailTextField.enabled = false;
-            emailTextField.textColor = UIColor.grayColor();
+
             print("ask server for code, email: \(id)");
         }
     }
     override func tableView(tableView: UITableView, willSelectRowAtIndexPath indexPath: NSIndexPath) -> NSIndexPath? {
         if !varificationCodeSent && indexPath == indexPathForRegister {
+            return nil
+        }else if varificationCodeSent && indexPath == indexPathForSendCode{
             return nil
         }
         return indexPath;

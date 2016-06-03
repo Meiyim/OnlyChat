@@ -17,7 +17,7 @@ class EmailServer:
 
 
     #wait server response, time comsumption
-    def send_mail(self,to, sub, content):
+    def send_mail(self,to, sub, content, callback):
         me = "hello"+"<"+self.from_address+">"
         msg = MIMEText(content,_subtype='plain');
         msg['Subject'] = sub;
@@ -27,15 +27,19 @@ class EmailServer:
             #print "connecting..."
             self.server.connect(self.from_host,self.from_port);
             #print "loging in..."
+            #self.server.ehlo_or_helo_if_needed();
+            self.server.ehlo();
             self.server.login(self.from_address,self.from_passwd);
             #print "sending ..."
             self.server.sendmail(me,to,msg.as_string());
             self.server.close();
 
-            return True;
+            callback(True);
+            #return True;
         except Exception, e:
             print str(e);
-            return False;
+            callback(False)
+            #return False;
 
 
 

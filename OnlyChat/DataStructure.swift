@@ -29,8 +29,8 @@ class Overseer{//singular pattern
         print("SAVE SUCCESSFULLY")
     }
     
-    func load()->Conversation? {
-        var ret: Conversation? = nil;
+    func load()->Conversation {
+        var ret: Conversation! = nil;
         let path = dataFilePath();
         if NSFileManager.defaultManager().fileExistsAtPath(path){
             if let data = NSData(contentsOfFile: path){
@@ -39,6 +39,9 @@ class Overseer{//singular pattern
                 unarchiver.finishDecoding();
                 print("LOAD SUCCESSFULLY")
             }
+        }
+        if ret == nil {
+            ret = Conversation()
         }
         conversation = ret;
         return ret;
@@ -55,9 +58,13 @@ class Overseer{//singular pattern
 class LoginID:NSObject, NSCoding{
     var id = "";
     var displayName = ""
-    var lastLogin:NSDate!
-    var portrait:UIImage!
+    var lastLogin:NSDate?
+    var portrait:UIImage?
     //Data Storage
+    init(id:String, name: String){
+        self.id = id;
+        self.displayName = name;
+    }
     func encodeWithCoder(aCoder: NSCoder) {
         aCoder.encodeObject(id, forKey: "id")
         aCoder.encodeObject(displayName, forKey: "id")
@@ -67,7 +74,7 @@ class LoginID:NSObject, NSCoding{
     required init?(coder aDecoder: NSCoder) {
         id = aDecoder.decodeObjectForKey("id") as! String;
         displayName = aDecoder.decodeObjectForKey("displayName") as! String;
-        portrait = aDecoder.decodeObjectForKey("portrait") as! UIImage;
+        portrait = aDecoder.decodeObjectForKey("portrait") as? UIImage;
     }
 }
 

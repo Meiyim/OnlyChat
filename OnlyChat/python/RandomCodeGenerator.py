@@ -16,9 +16,10 @@ class RandomCodeGenerator:
         now = time.time();
         if code == self.history[0][1] and now - self.history[0][0] < self.PERIOD:
             return True;
-        if code == self.history[1][1] and now - self.history[1][0] < self.PERIOD:
-            return True;
-
+        if len(self.history)>1:
+            if code == self.history[1][1] and now - self.history[1][0] < self.PERIOD:
+                return True;
+        print 'code illegal'
         return False;
 
 
@@ -35,5 +36,5 @@ class RandomCodeGenerator:
 
 
 if __name__ == "__main__":
-    gen = VerificationCodeGenerator();
+    gen = RandomCodeGenerator();
     print gen.generate();

@@ -15,7 +15,6 @@ from pymongo import MongoClient
 from SendEmail import *
 from RandomCodeGenerator import *
 
-
 from tornado.options import define, options
 
 
@@ -41,12 +40,22 @@ def emailIsValid(address):
     if len(address)>7 :
         pattern = "^.+\\@(\\[?)[a-zA-Z0-9\\-\\.]+\\.([a-zA-Z]{2,3}|[0-9]{1,3})(\\]?)$"
         if re.match(pattern, address) != None:
-           return True;
+            return True;
     print 'email illegal'
     return False;
 
 def emailIsTaken(address):
     return users_collection.find_one({'user_id':address}) != None ;
+
+def usernameIsGood(name):
+    if len(name)<3 :
+        return False
+    pattern = r'[\w+]';
+    if re.match(pattern,name) is None:
+        print 'username illegal'
+        return False;
+    
+    return True
 
 # tornado request handler...
 class WSHandler(tornado.websocket.WebSocketHandler):
@@ -87,6 +96,8 @@ class VerificationHandler(tornado.web.RequestHandler):
         self.write("hello client");
         
     #request handler...
+    @tornado.web.asynchronous
+    @tornado.gen.coroutine
     def sendCode(self,address):
         answer = {"response":"wrong"}
         #check email
@@ -94,19 +105,25 @@ class VerificationHandler(tornado.web.RequestHandler):
             answer["response"] = "emailInvalid";
         elif emailIsTaken(address):
             answer["response"] = "emailTaken";
-        elif VerificationHandler.emailServr.send_mail(address,\
+        else: #asynchrounos send method
+            sendSuccess = yield tornado.gen.Task( VerificationHandler.emailServr.send_mail,address,\
                 "OnlyChat VerificationCode",\
                 "hi~ , here's your verification code for OnlyChat\n %s\n Thank you for Using\n" %\
                 randomCodeGenerator.generate()   \
-                ):
-            answer["response"] = "codeSent";
-            print 'code sent'
+                )
+            if sendSuccess :
+                answer["response"] = "codeSent";
+                print 'code sent'
+
         self.write(json.dumps(answer));
+        self.finish();
 
     def register(self,userid,userName,code):
         answer = {'response':'wrong'};
         if not randomCodeGenerator.validate(code):
             answer['response'] = 'codeWrong';
+        elif not usernameIsGood(userName):
+            answer['response'] = 'nameWrong';
         else:
             if emailIsValid(userid) and ( not emailIsTaken(userid) ):
                 documentToInsert = {
@@ -117,17 +134,18 @@ class VerificationHandler(tornado.web.RequestHandler):
                     'portrait':None,
                     'last_login':None
                     }
-                pymongo.insert_one(documentToInsert);
+                #pretended to inserted
+                #users_collection.insert_one(documentToInsert);
                 answer['response'] = 'registed';
                 print 'new user registered %s' % userid;
+        self.write(json.dumps(answer));
                 
     def post(self):
         param_request_type = self.get_argument('request');
         param_id = self.get_argument('id');
-        param_name = self.get_argument('name','!nil');
+        param_name = self.get_argument('name','!');
         param_code = self.get_argument('code','xxx');
-
-        print 'post request received id = %s' % param_id;
+        print 'post request received id = %s, code=%s, name=%s' % (param_id,param_code,param_name);
         if param_request_type == 'code':
             self.sendCode(param_id)
         elif param_request_type  == 'register':
@@ -138,7 +156,6 @@ class VerificationHandler(tornado.web.RequestHandler):
 
 
 if __name__ == "__main__":
-
     tornado.options.parse_command_line();
     app = tornado.web.Application(
             handlers = [
