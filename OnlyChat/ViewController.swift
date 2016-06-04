@@ -84,6 +84,16 @@ class ViewController: JSQMessagesViewController {
         }
     
     }
+    
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        // Get the new view controller using segue.destinationViewController.
+        if segue.identifier == "showRegister" {
+            let dest = (segue.destinationViewController as! UINavigationController).viewControllers[0] as! RegistrationViewController
+            dest.delegate = self
+        }
+        // Pass the selected object to the new view controller.
+    }
+    
     private func showAlert(title: String, OKButton: String,handler: ((UIAlertAction)->())?){
         let alert = UIAlertController(title: title, message: "", preferredStyle: .Alert) //i18n
         let action1 = UIAlertAction(title: OKButton, style: .Destructive, handler: handler)
@@ -102,7 +112,7 @@ class ViewController: JSQMessagesViewController {
             break;
         case .Unpaired:
             //show reconnection guide
-            showAlert("please register first", OKButton: "OK", handler: {
+            showAlert("invite a frient to pair!", OKButton: "OK", handler: {
                 _ in
                 self.performSegueWithIdentifier("showPair", sender: self)
             })
@@ -213,8 +223,9 @@ extension ViewController: RegistrationViewControllerDelegate{
         senderId = registerID;
         senderDisplayName = registerName;
         conversation.local = LoginID(id: registerID, name: registerName)
-        
-        performSegueWithIdentifier("", sender: self);
+        doAfterDelay(0.5){
+            self.performSegueWithIdentifier("showPair", sender: self);
+        }
         
     }
 }

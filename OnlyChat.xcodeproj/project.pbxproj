@@ -19,6 +19,7 @@
 		965ED93F1CEDEC950068CB29 /* OnlyChatTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 965ED93E1CEDEC950068CB29 /* OnlyChatTests.swift */; };
 		965ED94A1CEDEC950068CB29 /* OnlyChatUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 965ED9491CEDEC950068CB29 /* OnlyChatUITests.swift */; };
 		96F8E1521D002E30001A2B26 /* python in Resources */ = {isa = PBXBuildFile; fileRef = 96F8E1511D002E30001A2B26 /* python */; };
+		96FC67D61D01B48800D278AA /* PairViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96FC67D51D01B48800D278AA /* PairViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -59,6 +60,7 @@
 		965ED9491CEDEC950068CB29 /* OnlyChatUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnlyChatUITests.swift; sourceTree = "<group>"; };
 		965ED94B1CEDEC950068CB29 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		96F8E1511D002E30001A2B26 /* python */ = {isa = PBXFileReference; lastKnownFileType = folder; path = python; sourceTree = "<group>"; };
+		96FC67D51D01B48800D278AA /* PairViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PairViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -130,6 +132,7 @@
 				962F51281CEF100F007E5F20 /* DataStructure.swift */,
 				962F512B1CEF39EA007E5F20 /* SystemExtensions.swift */,
 				962F512F1CEF4872007E5F20 /* RegistrationViewController.swift */,
+				96FC67D51D01B48800D278AA /* PairViewController.swift */,
 			);
 			path = OnlyChat;
 			sourceTree = "<group>";
@@ -351,6 +354,7 @@
 				965ED92C1CEDEC950068CB29 /* ViewController.swift in Sources */,
 				962F512C1CEF39EA007E5F20 /* SystemExtensions.swift in Sources */,
 				965ED92A1CEDEC950068CB29 /* AppDelegate.swift in Sources */,
+				96FC67D61D01B48800D278AA /* PairViewController.swift in Sources */,
 				962F51301CEF4872007E5F20 /* RegistrationViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

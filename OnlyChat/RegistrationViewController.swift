@@ -16,6 +16,7 @@ class RegistrationViewController: UITableViewController {
     
     let indexPathForSendCode = NSIndexPath(forRow: 1, inSection: 0);
     let indexPathForRegister = NSIndexPath(forRow: 0, inSection: 3);
+    let indexPathForDisplayName = NSIndexPath(forRow: 0, inSection:1);
     
     var delegate: RegistrationViewControllerDelegate?
 
@@ -107,17 +108,24 @@ class RegistrationViewController: UITableViewController {
                 print("http request wrong err:\(err.localizedDescription)");
             }else if let httpResponse = response as? NSHTTPURLResponse {
                 if httpResponse.statusCode == 200 {
-                    let answer = self.parseJSON(data!)!["response"] as! String;
+                    let json = self.parseJSON(data!)!
+                    let answer = json["response"] as! String;
                     print(answer);
-                    dispatch_async(dispatch_get_main_queue()) {
+                    dispatch_async(dispatch_get_main_queue()) {//UI update code should always in the main queue
                         UIApplication.sharedApplication().networkActivityIndicatorVisible = false
                         switch(answer){
                         case "codeSent":
                             self.varificationCodeSent = true;
                             self.updateUI();
                             return;
-                        case "emailTaken":
-                            self.showAlert("Email address has been taken!", OKButton: "OK", handler: nil)
+                        case "codeSentOldUser":
+                            self.showAlert("Hello Old User, You need to varify youself again", OKButton: "OK", handler: nil)
+                            self.varificationCodeSent = true;
+                            let cell = self.tableView!.cellForRowAtIndexPath(self.indexPathForDisplayName)!
+                            let textField = cell.contentView.viewWithTag(100) as! UITextField;
+                            textField.text = json["oldUsername"] as! String
+                            self.updateUI();
+                            return;
                         case "emailInvalid":
                             self.showAlert("illegal email address, pls check your spelling", OKButton: "OK", handler: nil)
                         default:
@@ -144,16 +152,25 @@ class RegistrationViewController: UITableViewController {
                 print("http request wrong err:\(err.localizedDescription)");
             }else if let httpResponse = response as? NSHTTPURLResponse {
                 if httpResponse.statusCode == 200 {
-                    let answer = self.parseJSON(data!)!["response"] as! String;
+                    let json = self.parseJSON(data!)!
+                    let answer = json["response"] as! String;
                     print(answer);
                     dispatch_async(dispatch_get_main_queue()) {
                         UIApplication.sharedApplication().networkActivityIndicatorVisible = false
                         switch(answer){
                         case "registed":
-                            //self.showAlert("Registration Suceeded, Welcome initiate", OKButton: "OK", handler: nil)
-                            self.dismissViewControllerAnimated(true, completion: {
-                                _ in
-                                self.delegate?.registrationViewController(self,registerID: id, registerName:  displayName);
+                            self.showAlert("Registration Suceeded, Welcome initiate", OKButton: "OK",handler:{ _ in
+                                self.dismissViewControllerAnimated(true, completion: {_ in
+                                    self.delegate?.registrationViewController(self,registerID: id, registerName:  displayName);
+                                })
+                            })
+                        case "oldUser":
+                            let oldName = json["oldUsername"] as! String
+                            assert(oldName==displayName)
+                            self.showAlert("Welcome Back Again: \(oldName)", OKButton: "OK",handler:{ _ in
+                                self.dismissViewControllerAnimated(true, completion: {_ in
+                                    self.delegate?.registrationViewController(self,registerID: id, registerName:  oldName);
+                                })
                             })
                         case "codeWrong":
                             self.showAlert("Invalide Varification Code", OKButton: "OK", handler: nil)

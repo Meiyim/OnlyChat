@@ -1,11 +1,11 @@
-import logging
+#import logging
 import tornado.escape;
 import tornado.ioloop
 import tornado.options
 import tornado.web
 import tornado.websocket
-import os.path
-import uuid;
+#import os.path
+#import uuid;
 
 import json
 import re
@@ -76,7 +76,7 @@ class WSHandler(tornado.websocket.WebSocketHandler):
         print "connection closed... %d clients remain" % len(WSHandler.clients)
 
     def forwardMessage(self,msg):
-                self.pair.write_message(msg);
+        self.pair.write_message(msg);
 
     def on_message(self,message):
         print "message received: %s, forwarding..." % message
@@ -103,29 +103,44 @@ class VerificationHandler(tornado.web.RequestHandler):
         #check email
         if not emailIsValid(address):
             answer["response"] = "emailInvalid";
-        elif emailIsTaken(address):
-            answer["response"] = "emailTaken";
-        else: #asynchrounos send method
+        else:
+            isOldUser = False;
+            if emailIsTaken(address):
+                isOldUser = True;
+            #asynchrounos send method
             sendSuccess = yield tornado.gen.Task( VerificationHandler.emailServr.send_mail,address,\
                 "OnlyChat VerificationCode",\
                 "hi~ , here's your verification code for OnlyChat\n %s\n Thank you for Using\n" %\
-                randomCodeGenerator.generate()   \
+                randomCodeGenerator.generate(str(address))   \
                 )
             if sendSuccess :
-                answer["response"] = "codeSent";
-                print 'code sent'
+                if isOldUser:
+                    answer['response'] = 'coldeSentOldUser'
+                    answer['oldUsername'] = users_collection.find_one({'user_id':userid}).user_name;
+                    print 'code sent old user'
+                else:
+                    answer["response"] = "codeSent";
+                    print 'code sent'
 
         self.write(json.dumps(answer));
         self.finish();
 
     def register(self,userid,userName,code):
         answer = {'response':'wrong'};
-        if not randomCodeGenerator.validate(code):
+        if not randomCodeGenerator.validate(str(code),str(userid)):
             answer['response'] = 'codeWrong';
         elif not usernameIsGood(userName):
             answer['response'] = 'nameWrong';
+        elif not emailIsValid(userid):
+            #user should not change email
+            print 'email check failed'
         else:
-            if emailIsValid(userid) and ( not emailIsTaken(userid) ):
+            if emailIsTaken(userid):
+                oldUsername = users_collection.find_one({'user_id':userid}).user_name;
+                answer['response'] = 'oldUser';
+                answer['oldUsename'] = oldUsername;
+                print 'old user returned'
+            else:
                 documentToInsert = {
                     'user_id':userid,
                     'user_name':userName,
@@ -135,7 +150,7 @@ class VerificationHandler(tornado.web.RequestHandler):
                     'last_login':None
                     }
                 #pretended to inserted
-                #users_collection.insert_one(documentToInsert);
+                users_collection.insert_one(documentToInsert);
                 answer['response'] = 'registed';
                 print 'new user registered %s' % userid;
         self.write(json.dumps(answer));

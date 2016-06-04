@@ -6,6 +6,49 @@
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <scenes>
+        <!--Pair View Controller-->
+        <scene sceneID="h0d-GL-K1Z">
+            <objects>
+                <viewController id="auN-Cg-vzJ" customClass="PairViewController" customModule="OnlyChat" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="9uC-Ce-vfu"/>
+                        <viewControllerLayoutGuide type="bottom" id="oUW-ga-iC5"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="xiW-Rc-BZJ">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="aEa-mV-NiM">
+                                <rect key="frame" x="0.0" y="64" width="600" height="536"/>
+                            </imageView>
+                            <searchBar contentMode="redraw" translatesAutoresizingMaskIntoConstraints="NO" id="30k-Qf-cqC">
+                                <rect key="frame" x="0.0" y="64" width="600" height="44"/>
+                                <textInputTraits key="textInputTraits"/>
+                            </searchBar>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="aEa-mV-NiM" firstAttribute="top" secondItem="9uC-Ce-vfu" secondAttribute="bottom" id="3Ua-Js-e8f"/>
+                            <constraint firstItem="30k-Qf-cqC" firstAttribute="leading" secondItem="xiW-Rc-BZJ" secondAttribute="leadingMargin" constant="-20" id="5iz-mh-5zU"/>
+                            <constraint firstAttribute="trailing" secondItem="aEa-mV-NiM" secondAttribute="trailing" id="XWS-H8-yoI"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="30k-Qf-cqC" secondAttribute="trailing" constant="-20" id="vjV-hL-2zJ"/>
+                            <constraint firstItem="30k-Qf-cqC" firstAttribute="top" secondItem="9uC-Ce-vfu" secondAttribute="bottom" id="w2B-WC-loh"/>
+                            <constraint firstItem="aEa-mV-NiM" firstAttribute="leading" secondItem="xiW-Rc-BZJ" secondAttribute="leading" id="x9i-Hr-l9f"/>
+                            <constraint firstItem="oUW-ga-iC5" firstAttribute="top" secondItem="aEa-mV-NiM" secondAttribute="bottom" id="zMV-Y6-mbq"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" id="2fl-WN-mgj">
+                        <barButtonItem key="leftBarButtonItem" systemItem="cancel" id="iv6-uq-ey4"/>
+                    </navigationItem>
+                    <connections>
+                        <outlet property="imageView" destination="aEa-mV-NiM" id="H9g-lg-itR"/>
+                        <outlet property="searchBar" destination="30k-Qf-cqC" id="R9w-BD-WUe"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="sFo-ES-Ui8" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1900" y="1755"/>
+        </scene>
         <!--View Controller-->
         <scene sceneID="tne-QT-ifu">
             <objects>
@@ -22,6 +65,7 @@
                     <navigationItem key="navigationItem" id="m5e-Tz-wLM"/>
                     <connections>
                         <segue destination="uW3-T9-OHe" kind="presentation" identifier="showRegister" id="9kc-ru-N2c"/>
+                        <segue destination="2x2-74-wRE" kind="presentation" identifier="showPair" id="a22-6V-SaO"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
@@ -88,7 +132,7 @@
                                             <rect key="frame" x="0.0" y="0.0" width="600" height="43"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="昵称~" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="3Pp-AN-4La">
+                                                <textField opaque="NO" clipsSubviews="YES" tag="100" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="昵称~" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="3Pp-AN-4La">
                                                     <rect key="frame" x="0.0" y="0.0" width="600" height="43"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                                     <textInputTraits key="textInputTraits"/>
@@ -215,6 +259,24 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="yGV-JT-KWx" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1900" y="994"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="2ih-AZ-hH7">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="2x2-74-wRE" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="KDx-JV-b9e">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="auN-Cg-vzJ" kind="relationship" relationship="rootViewController" id="iQR-ca-ZL7"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="2yE-sW-Aor" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1034" y="1755"/>
         </scene>
     </scenes>
 </document>
