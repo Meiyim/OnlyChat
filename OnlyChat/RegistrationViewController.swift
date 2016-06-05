@@ -17,9 +17,11 @@ class RegistrationViewController: UITableViewController {
     let indexPathForSendCode = NSIndexPath(forRow: 1, inSection: 0);
     let indexPathForRegister = NSIndexPath(forRow: 0, inSection: 3);
     let indexPathForDisplayName = NSIndexPath(forRow: 0, inSection:1);
+    let indexPathForSelectPhoto = NSIndexPath(forRow: 1, inSection: 1);
     
     var delegate: RegistrationViewControllerDelegate?
-
+    var image: UIImage?
+    
     var registrationTask: NSURLSessionDataTask? = nil;
     
     var varificationCodeSent = false;
@@ -27,6 +29,8 @@ class RegistrationViewController: UITableViewController {
     @IBOutlet weak var emailTextField: UITextField!
     @IBOutlet weak var displayNameTextField: UITextField!
     @IBOutlet weak var varificationCodeTextField: UITextField!
+    @IBOutlet weak var imageView: UIImageView!
+    @IBOutlet weak var addPhotoLabel: UILabel!
     //MARK: - IBACtion
     @IBAction func cancel(sender: UIBarButtonItem){
         dismissViewControllerAnimated(true, completion: nil);
@@ -46,6 +50,9 @@ class RegistrationViewController: UITableViewController {
         super.viewDidLoad()
         navigationItem.title = "Registration"
         varificationCodeSent = false;
+        imageView.hidden = true
+        addPhotoLabel.hidden = false
+
         // Uncomment the following line to preserve selection between presentations
         // self.clearsSelectionOnViewWillAppear = false
 
@@ -79,10 +86,17 @@ class RegistrationViewController: UITableViewController {
             varificationCodeTextField.text = ""
         }
         //tableView.reloadRowsAtIndexPaths([indexPathForRegister], withRowAnimation: .Fade);
+        if let img = image{
+            imageView.hidden = false
+            imageView.frame = CGRect(x: 10, y: 10, width: 160, height: 260)
+            imageView.image = img
+            addPhotoLabel.hidden = true;
+        }
+        tableView.reloadData();
         print("ui updated")
     }
 
-    // MAKR: - HTTP request
+    //MARK: - HTTP request
     private func askServerForVarificationCode(id:String){
         varificationCodeSent = false;
         
@@ -223,6 +237,12 @@ class RegistrationViewController: UITableViewController {
             askServerForVarificationCode(id );
 
             print("ask server for code, email: \(id)");
+        }else if indexPath==indexPathForSelectPhoto{
+            if UIImagePickerController.isSourceTypeAvailable(.Camera) {
+                showPhotoMenu()
+            } else {
+                choosePhotoFromLibrary()
+            }
         }
     }
     override func tableView(tableView: UITableView, willSelectRowAtIndexPath indexPath: NSIndexPath) -> NSIndexPath? {
@@ -233,70 +253,70 @@ class RegistrationViewController: UITableViewController {
         }
         return indexPath;
     }
-    /*
-
-    override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
-        // #warning Incomplete implementation, return the number of sections
-        return 0
+    override func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+        switch indexPath{
+        case indexPathForSelectPhoto:
+            return imageView.hidden ? 44 : 280
+        default:
+            return 44
+        }
     }
-
-    override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        // #warning Incomplete implementation, return the number of rows
-        return 0
-    }
-
-    override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("reuseIdentifier", forIndexPath: indexPath)
-
-        // Configure the cell...
-
-        return cell
-    }
-    */
-
-    /*
-    // Override to support conditional editing of the table view.
-    override func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
-        // Return false if you do not want the specified item to be editable.
-        return true
-    }
-    */
-
-    /*
-    // Override to support editing the table view.
-    override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
-        if editingStyle == .Delete {
-            // Delete the row from the data source
-            tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
-        } else if editingStyle == .Insert {
-            // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-        }    
-    }
-    */
-
-    /*
-    // Override to support rearranging the table view.
-    override func tableView(tableView: UITableView, moveRowAtIndexPath fromIndexPath: NSIndexPath, toIndexPath: NSIndexPath) {
-
-    }
-    */
-
-    /*
-    // Override to support conditional rearranging of the table view.
-    override func tableView(tableView: UITableView, canMoveRowAtIndexPath indexPath: NSIndexPath) -> Bool {
-        // Return false if you do not want the item to be re-orderable.
-        return true
-    }
-    */
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
-    }
-    */
-
 }
+
+extension RegistrationViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+    
+    func takePhotoWithCamera() {
+        let imagePicker = UIImagePickerController()
+        imagePicker.sourceType = .Camera
+        imagePicker.delegate = self
+        imagePicker.allowsEditing = true
+        imagePicker.view.tintColor = view.tintColor
+        presentViewController(imagePicker, animated: true, completion: nil)
+    }
+    
+    func choosePhotoFromLibrary() {
+        let imagePicker = UIImagePickerController()
+        imagePicker.sourceType = .PhotoLibrary
+        imagePicker.delegate = self
+        imagePicker.allowsEditing = true
+        imagePicker.view.tintColor = view.tintColor
+        presentViewController(imagePicker, animated: true, completion: nil)
+    }
+    
+    func imagePickerController(picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : AnyObject]) {
+        image = info[UIImagePickerControllerEditedImage] as! UIImage?
+        
+        updateUI()
+        
+        tableView.reloadData()
+        dismissViewControllerAnimated(true, completion: nil)
+    }
+    
+    func imagePickerControllerDidCancel(picker: UIImagePickerController) {
+        dismissViewControllerAnimated(true, completion: nil)
+    }
+    
+    func pickPhoto() {
+        if UIImagePickerController.isSourceTypeAvailable(.Camera) {
+            showPhotoMenu()
+        } else {
+            choosePhotoFromLibrary()
+        }
+    }
+    
+    func showPhotoMenu() {
+        let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .ActionSheet)
+        
+        let cancelAction = UIAlertAction(title: "Cancel", style: .Cancel, handler: nil)
+        alertController.addAction(cancelAction)
+        
+        let takePhotoAction = UIAlertAction(title: "Take Photo", style: .Default, handler: { _ in self.takePhotoWithCamera() })
+        alertController.addAction(takePhotoAction)
+        
+        let chooseFromLibraryAction = UIAlertAction(title: "Choose From Library", style: .Default, handler: { _ in self.choosePhotoFromLibrary() })
+        alertController.addAction(chooseFromLibraryAction)
+        
+        presentViewController(alertController, animated: true, completion: nil)
+    }
+}
+

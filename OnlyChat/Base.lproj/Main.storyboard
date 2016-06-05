@@ -146,12 +146,31 @@
                                             </constraints>
                                         </tableViewCellContentView>
                                     </tableViewCell>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="YRo-K5-fht">
+                                        <rect key="frame" x="0.0" y="282" width="600" height="44"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="YRo-K5-fht" id="eG5-IV-wVB">
+                                            <rect key="frame" x="0.0" y="0.0" width="600" height="43"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="添加照片" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="50u-nB-6bx">
+                                                    <rect key="frame" x="20" y="11" width="68" height="21"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="lGH-Vn-Lf6">
+                                                    <rect key="frame" x="102" y="0.0" width="365" height="35"/>
+                                                </imageView>
+                                            </subviews>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
                                 </cells>
                             </tableViewSection>
                             <tableViewSection id="m83-Dm-OAc">
                                 <cells>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="mfu-fX-sef">
-                                        <rect key="frame" x="0.0" y="318" width="600" height="44"/>
+                                        <rect key="frame" x="0.0" y="362" width="600" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="mfu-fX-sef" id="4rX-81-MQC">
                                             <rect key="frame" x="0.0" y="0.0" width="600" height="43"/>
@@ -176,7 +195,7 @@
                             <tableViewSection id="Ous-iE-ZuH">
                                 <cells>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" textLabel="ivQ-vh-WPe" detailTextLabel="u8I-ge-LKx" style="IBUITableViewCellStyleValue1" id="dIU-sY-QpT">
-                                        <rect key="frame" x="0.0" y="398" width="600" height="44"/>
+                                        <rect key="frame" x="0.0" y="442" width="600" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="dIU-sY-QpT" id="lcf-zM-4bs">
                                             <rect key="frame" x="0.0" y="0.0" width="600" height="43"/>
@@ -215,8 +234,10 @@
                         </barButtonItem>
                     </navigationItem>
                     <connections>
+                        <outlet property="addPhotoLabel" destination="50u-nB-6bx" id="1qg-Dp-Wj2"/>
                         <outlet property="displayNameTextField" destination="3Pp-AN-4La" id="RgW-3T-htD"/>
                         <outlet property="emailTextField" destination="PC6-ug-W3y" id="CJG-n9-uyJ"/>
+                        <outlet property="imageView" destination="lGH-Vn-Lf6" id="EZQ-t2-7ge"/>
                         <outlet property="varificationCodeTextField" destination="4H4-yy-R8d" id="oge-Ft-WrI"/>
                     </connections>
                 </tableViewController>

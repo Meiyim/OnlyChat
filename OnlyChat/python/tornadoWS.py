@@ -141,7 +141,7 @@ class InfoSearchHandler(tornado.web.RequestHandler):
         print 'search request received %s: id = %s' % (param_request_type, param_id);
         if param_request_type == 'search':
             self.handleSearch(param_id)
-        elif param_request_type  == 'pair'
+        elif param_request_type  == 'pair':
             self.handlePair(param_id,param_pair_id);
         elif param_request_type  == 'update':
             self.handleUpdate(param_id)
@@ -240,6 +240,7 @@ if __name__ == "__main__":
                 (r'/ws',WSHandler),
                 (r'/test', TestHandler),
                 (r'/register', VerificationHandler),
+                (r'/info',InfoSearchHandler),
                 
             ]);
 

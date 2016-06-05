@@ -32,6 +32,7 @@ class Overseer{//singular pattern
     func load()->Conversation {
         var ret: Conversation! = nil;
         let path = dataFilePath();
+        print(path);
         if NSFileManager.defaultManager().fileExistsAtPath(path){
             if let data = NSData(contentsOfFile: path){
                 let unarchiver = NSKeyedUnarchiver(forReadingWithData: data)
