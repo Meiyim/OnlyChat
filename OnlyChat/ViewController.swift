@@ -54,12 +54,17 @@ class ViewController: JSQMessagesViewController {
         // Anywhere that AvatarIDWoz is used you should replace with you currentUserVariable
         automaticallyScrollsToMostRecentMessage = true
 
+        
+        defer{
+            doAfterDelay(0.5, closure: {
+                self.updateStatus();
+            })
+        }
         if let local = conversation.local {
             senderId = local.id;
             senderDisplayName = local.displayName;
             guard let remote = conversation.remote else{
                 status = .Unpaired
-                updateStatus()
                 return;
             }
             //update remote status
@@ -74,14 +79,15 @@ class ViewController: JSQMessagesViewController {
             self.messages = makeConversation()
             self.collectionView?.reloadData()
             self.collectionView?.layoutIfNeeded()
+            return
         }else{
             //show registration page
             status = .Unregistered;
             senderId = "None";
             senderDisplayName = "";
-            updateStatus()
-
+            return;
         }
+
     
     }
     
@@ -223,6 +229,7 @@ extension ViewController: RegistrationViewControllerDelegate{
         senderId = registerID;
         senderDisplayName = registerName;
         conversation.local = LoginID(id: registerID, name: registerName)
+        overseer.save();
         doAfterDelay(0.5){
             self.performSegueWithIdentifier("showPair", sender: self);
         }

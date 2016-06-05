@@ -47,6 +47,9 @@ def emailIsValid(address):
 def emailIsTaken(address):
     return users_collection.find_one({'user_id':address}) != None ;
 
+def findEmail(address):
+    return users_collection.find_one({'user_id':address}) ;
+
 def usernameIsGood(name):
     if len(name)<3 :
         return False
@@ -88,6 +91,65 @@ class TestHandler(tornado.web.RequestHandler):  #for browser tester
         loader = tornado.template.Loader(".")
         self.write(loader.load("index.html").generate())
 
+# userInfo search
+class InfoSearchHandler(tornado.web.RequestHandler):
+    def handleSearch(self,email):
+        answer = {'response':'wrong'};
+        if not emailIsValid(email):
+            answer['response'] = 'emailInvalid'
+        else:
+            searchResult = findEmail(email)
+            if searchResult is None:
+                answer['response'] = 'noSuchUser'
+            elif searchResult['pair_id'] != None:
+                answer['response'] = 'userPaired'
+            else:
+                #return status
+                answer['response'] = 'userAvailable'
+                answer['user_id'] = searchResult['user_id'];
+                answer['user_name'] = searchResult['user_name']
+                answer['portrait'] = searchResult['portrait']
+        self.write(json.dumps(answer));
+
+    def handlePair(self,email,pairEmail):
+        answer = {'response':'wrong'};
+        if not emailIsValid(email) or not emailIsValid(email):
+            pass
+        else:
+            me = findEmail(email)
+            she = findEmail(pairEmail)
+            if me is None or she is None:
+                pass
+            elif me['pair_id'] != None or she['pair_id'] != None:
+                print 'some body is paired'
+            else:
+                me['pair_id'] = she['user_id']
+                she['pair_id'] = me['user_id'];
+                #update database
+                users_collection.insert_many([me,she]);
+                answer['response'] = 'paired'
+        self.write(json.dumps(answer));
+
+    def handleUpdate(self,email):
+        pass
+            
+
+    def post(self):
+        param_request_type = self.get_argument('request');
+        param_id = self.get_argument('id');
+        param_pair_id = self.get_argument('pairId');
+        print 'search request received %s: id = %s' % (param_request_type, param_id);
+        if param_request_type == 'search':
+            self.handleSearch(param_id)
+        elif param_request_type  == 'pair'
+            self.handlePair(param_id,param_pair_id);
+        elif param_request_type  == 'update':
+            self.handleUpdate(param_id)
+        else: 
+            print 'request cannot handled: %s' % param_request_type 
+
+
+# verificatino handler
 class VerificationHandler(tornado.web.RequestHandler):
     emailServr = EmailServer();
 
@@ -115,8 +177,8 @@ class VerificationHandler(tornado.web.RequestHandler):
                 )
             if sendSuccess :
                 if isOldUser:
-                    answer['response'] = 'coldeSentOldUser'
-                    answer['oldUsername'] = users_collection.find_one({'user_id':userid}).user_name;
+                    answer['response'] = 'codeSentOldUser'
+                    answer['oldUsername'] = findEmail(address)['user_name'];
                     print 'code sent old user'
                 else:
                     answer["response"] = "codeSent";
@@ -135,10 +197,11 @@ class VerificationHandler(tornado.web.RequestHandler):
             #user should not change email
             print 'email check failed'
         else:
-            if emailIsTaken(userid):
-                oldUsername = users_collection.find_one({'user_id':userid}).user_name;
+            oldUser = findEmail(userid);
+            if oldUser is None:
+                oldUsername = oldUser['user_name'];
                 answer['response'] = 'oldUser';
-                answer['oldUsename'] = oldUsername;
+                answer['oldUsername'] = str(oldUsername);
                 print 'old user returned'
             else:
                 documentToInsert = {

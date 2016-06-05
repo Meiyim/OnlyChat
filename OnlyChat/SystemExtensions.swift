@@ -12,13 +12,24 @@ func documentDirectory() -> String {
     return paths[0]
 }
 func dataFilePath()->String {
-    return documentDirectory()+"/Schedules.plist"
+    return documentDirectory()+"/OnlyChat.plist"
 }
 func doAfterDelay(seconds: Double, closure: ()->()){ // GCD framework!
     let when = dispatch_time(DISPATCH_TIME_NOW, Int64(seconds * Double(NSEC_PER_SEC)));
     dispatch_after(when, dispatch_get_main_queue(), closure);
 }
 
+func parseJSON(data: NSData) -> [String: AnyObject]? {
+    do{
+        let ret =  try NSJSONSerialization.JSONObjectWithData(data, options:NSJSONReadingOptions(rawValue: 0)) as? [String: AnyObject];
+        return ret;
+        
+    }catch{
+        print("cannot parse retrun json");
+    }
+    
+    return nil
+}
 
 class Regex {
     let internalExpression:NSRegularExpression

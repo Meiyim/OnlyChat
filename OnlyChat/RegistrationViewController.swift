@@ -33,18 +33,7 @@ class RegistrationViewController: UITableViewController {
     }
     
     //MARK: - utility
-    private func parseJSON(data: NSData) -> [String: AnyObject]? {
-        do{
-            let ret =  try NSJSONSerialization.JSONObjectWithData(data, options:NSJSONReadingOptions(rawValue: 0)) as? [String: AnyObject];
-            return ret;
-        
-        }catch{
-            print("cannot parse retrun json");
-        }
-        
 
-        return nil
-    }
     private func showAlert(title: String, OKButton: String,handler: ((UIAlertAction)->())?){
         let alert = UIAlertController(title: title, message: "", preferredStyle: .Alert) //i18n
         let action1 = UIAlertAction(title: OKButton, style: .Destructive, handler: handler)
@@ -55,6 +44,7 @@ class RegistrationViewController: UITableViewController {
     //MARK: - View
     override func viewDidLoad() {
         super.viewDidLoad()
+        navigationItem.title = "Registration"
         varificationCodeSent = false;
         // Uncomment the following line to preserve selection between presentations
         // self.clearsSelectionOnViewWillAppear = false
@@ -100,7 +90,6 @@ class RegistrationViewController: UITableViewController {
         let param = String(format: "request=%@&id=%@","code",id);
         let body = param.dataUsingEncoding(NSUTF8StringEncoding)
         request.HTTPBody = body;
-
         registrationTask = NSURLSession.sharedSession().dataTaskWithRequest(request,completionHandler: {
             data ,response, error in
             if let err = error {
@@ -108,7 +97,7 @@ class RegistrationViewController: UITableViewController {
                 print("http request wrong err:\(err.localizedDescription)");
             }else if let httpResponse = response as? NSHTTPURLResponse {
                 if httpResponse.statusCode == 200 {
-                    let json = self.parseJSON(data!)!
+                    let json = parseJSON(data!)!
                     let answer = json["response"] as! String;
                     print(answer);
                     dispatch_async(dispatch_get_main_queue()) {//UI update code should always in the main queue
@@ -152,7 +141,7 @@ class RegistrationViewController: UITableViewController {
                 print("http request wrong err:\(err.localizedDescription)");
             }else if let httpResponse = response as? NSHTTPURLResponse {
                 if httpResponse.statusCode == 200 {
-                    let json = self.parseJSON(data!)!
+                    let json = parseJSON(data!)!
                     let answer = json["response"] as! String;
                     print(answer);
                     dispatch_async(dispatch_get_main_queue()) {

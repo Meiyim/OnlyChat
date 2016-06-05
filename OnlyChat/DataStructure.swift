@@ -58,7 +58,6 @@ class Overseer{//singular pattern
 class LoginID:NSObject, NSCoding{
     var id = "";
     var displayName = ""
-    var lastLogin:NSDate?
     var portrait:UIImage?
     //Data Storage
     init(id:String, name: String){
@@ -67,9 +66,8 @@ class LoginID:NSObject, NSCoding{
     }
     func encodeWithCoder(aCoder: NSCoder) {
         aCoder.encodeObject(id, forKey: "id")
-        aCoder.encodeObject(displayName, forKey: "id")
-        aCoder.encodeObject(lastLogin, forKey: "id")
-        aCoder.encodeObject(portrait, forKey: "id")
+        aCoder.encodeObject(displayName, forKey: "displayName")
+        aCoder.encodeObject(portrait, forKey: "portrait")
     }
     required init?(coder aDecoder: NSCoder) {
         id = aDecoder.decodeObjectForKey("id") as! String;
@@ -86,7 +84,7 @@ class Conversation: NSObject,NSCoding{
         aCoder.encodeObject(remote, forKey: "remote")
     }
     required init?(coder aDecoder: NSCoder) {
-        local = aDecoder.decodeObjectForKey("local") as? LoginID
+        local = aDecoder.decodeObjectForKey("local") as! LoginID
         remote = aDecoder.decodeObjectForKey("remote") as? LoginID
     }
     override init(){
