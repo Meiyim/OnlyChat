@@ -31,7 +31,9 @@ class ViewController: JSQMessagesViewController {
     let outgoingBubble = JSQMessagesBubbleImageFactory().outgoingMessagesBubbleImageWithColor(UIColor.lightGrayColor())
     
     let fakeBubble = JSQMessagesBubbleImageFactory().outgoingMessagesBubbleImageWithColor(UIColor.clearColor())
+    //MARK: - IBoutlet
     
+    @IBOutlet weak var imageView: UIImageView!
     //MARK: - View
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -100,7 +102,7 @@ class ViewController: JSQMessagesViewController {
         // Pass the selected object to the new view controller.
     }
     
-    private func showAlert(title: String, OKButton: String,handler: ((UIAlertAction)->())?){
+    private func showAlert(title: String, OKButton: String,handler: ((UIAlertAction)->())? = nil){
         let alert = UIAlertController(title: title, message: "", preferredStyle: .Alert) //i18n
         let action1 = UIAlertAction(title: OKButton, style: .Destructive, handler: handler)
         alert.addAction(action1)

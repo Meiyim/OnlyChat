@@ -60,10 +60,22 @@
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="NHc-ab-wnC">
+                                <rect key="frame" x="0.0" y="20" width="600" height="580"/>
+                            </imageView>
+                        </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="NHc-ab-wnC" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="GaU-fF-i4n"/>
+                            <constraint firstItem="NHc-ab-wnC" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" constant="-44" id="buc-No-dBO"/>
+                            <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="NHc-ab-wnC" secondAttribute="bottom" id="nJV-9Y-EAq"/>
+                            <constraint firstAttribute="trailing" secondItem="NHc-ab-wnC" secondAttribute="trailing" id="pDu-JZ-lrA"/>
+                        </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="m5e-Tz-wLM"/>
                     <connections>
+                        <outlet property="imageView" destination="NHc-ab-wnC" id="1pc-5T-QVg"/>
                         <segue destination="uW3-T9-OHe" kind="presentation" identifier="showRegister" id="9kc-ru-N2c"/>
                         <segue destination="2x2-74-wRE" kind="presentation" identifier="showPair" id="a22-6V-SaO"/>
                     </connections>
@@ -132,14 +144,14 @@
                                             <rect key="frame" x="0.0" y="0.0" width="600" height="43"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <textField opaque="NO" clipsSubviews="YES" tag="100" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="昵称~" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="3Pp-AN-4La">
-                                                    <rect key="frame" x="0.0" y="0.0" width="600" height="43"/>
+                                                <textField opaque="NO" clipsSubviews="YES" tag="100" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="昵称~" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="3Pp-AN-4La">
+                                                    <rect key="frame" x="8" y="0.0" width="592" height="43"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                                     <textInputTraits key="textInputTraits"/>
                                                 </textField>
                                             </subviews>
                                             <constraints>
-                                                <constraint firstItem="3Pp-AN-4La" firstAttribute="leading" secondItem="lrO-JT-hvC" secondAttribute="leading" id="44t-gr-23A"/>
+                                                <constraint firstItem="3Pp-AN-4La" firstAttribute="leading" secondItem="lrO-JT-hvC" secondAttribute="leadingMargin" id="44t-gr-23A"/>
                                                 <constraint firstAttribute="trailing" secondItem="3Pp-AN-4La" secondAttribute="trailing" id="SrG-yI-R9e"/>
                                                 <constraint firstItem="3Pp-AN-4La" firstAttribute="top" secondItem="lrO-JT-hvC" secondAttribute="top" id="kHX-p7-n1T"/>
                                                 <constraint firstAttribute="bottom" secondItem="3Pp-AN-4La" secondAttribute="bottom" id="wxP-vM-HSk"/>
@@ -159,10 +171,19 @@
                                                     <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="lGH-Vn-Lf6">
-                                                    <rect key="frame" x="102" y="0.0" width="365" height="35"/>
+                                                <imageView hidden="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="lGH-Vn-Lf6">
+                                                    <rect key="frame" x="8" y="8" width="584" height="260"/>
+                                                    <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="height" constant="260" id="frL-iH-FQd"/>
+                                                    </constraints>
                                                 </imageView>
                                             </subviews>
+                                            <constraints>
+                                                <constraint firstItem="lGH-Vn-Lf6" firstAttribute="leading" secondItem="eG5-IV-wVB" secondAttribute="leadingMargin" id="MwX-5t-3rh"/>
+                                                <constraint firstItem="lGH-Vn-Lf6" firstAttribute="top" secondItem="eG5-IV-wVB" secondAttribute="topMargin" id="S7u-Sp-bf2"/>
+                                                <constraint firstAttribute="trailingMargin" secondItem="lGH-Vn-Lf6" secondAttribute="trailing" id="ddj-7p-k5l"/>
+                                            </constraints>
                                         </tableViewCellContentView>
                                     </tableViewCell>
                                 </cells>
@@ -176,15 +197,15 @@
                                             <rect key="frame" x="0.0" y="0.0" width="600" height="43"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="请输入验证码" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="4H4-yy-R8d">
-                                                    <rect key="frame" x="0.0" y="0.0" width="600" height="43"/>
+                                                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="请输入验证码" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="4H4-yy-R8d">
+                                                    <rect key="frame" x="8" y="0.0" width="592" height="43"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                                     <textInputTraits key="textInputTraits"/>
                                                 </textField>
                                             </subviews>
                                             <constraints>
                                                 <constraint firstAttribute="bottom" secondItem="4H4-yy-R8d" secondAttribute="bottom" id="0K4-Vi-Sjr"/>
-                                                <constraint firstItem="4H4-yy-R8d" firstAttribute="leading" secondItem="4rX-81-MQC" secondAttribute="leading" id="Ee7-Gf-Gys"/>
+                                                <constraint firstItem="4H4-yy-R8d" firstAttribute="leading" secondItem="4rX-81-MQC" secondAttribute="leadingMargin" id="Ee7-Gf-Gys"/>
                                                 <constraint firstItem="4H4-yy-R8d" firstAttribute="top" secondItem="4rX-81-MQC" secondAttribute="top" id="dYu-eJ-FtQ"/>
                                                 <constraint firstAttribute="trailing" secondItem="4H4-yy-R8d" secondAttribute="trailing" id="gR3-87-Oxo"/>
                                             </constraints>

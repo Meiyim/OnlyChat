@@ -9,6 +9,7 @@ import tornado.websocket
 
 import json
 import re
+import pymongo
 from pymongo import MongoClient
 
 
@@ -31,6 +32,8 @@ define("port",default=8888,help="run on given port",type=int)
 
 db = MongoClient('mongodb://localhost:27017/')['OnlyChat_DataBase'];
 users_collection = db['userInfo_Collection'];
+users_collection.create_index([('user_id',pymongo.ASCENDING)],unique=True)
+
 
 randomCodeGenerator = RandomCodeGenerator();
 
@@ -108,7 +111,6 @@ class InfoSearchHandler(tornado.web.RequestHandler):
                 answer['response'] = 'userAvailable'
                 answer['user_id'] = searchResult['user_id'];
                 answer['user_name'] = searchResult['user_name']
-                answer['portrait'] = searchResult['portrait']
         self.write(json.dumps(answer));
 
     def handlePair(self,email,pairEmail):
@@ -148,11 +150,31 @@ class InfoSearchHandler(tornado.web.RequestHandler):
         else: 
             print 'request cannot handled: %s' % param_request_type 
 
-
+# upload handler
+class UploadHanler(tornado.web.RequestHandler):
+    def get(self):
+        downloadID = self.get_argument('downloadID');
+        user = users_collection.find_one(ObjectID(downloadID));
+        portraitData = uesr['portrait']
+        if portraitData:
+            self.write(portraitData);
+        
+    def post(self):
+        answer = 'wrong'
+        data = self.request.body;
+        userid =  self.request.headers["Filename"];
+        # process file
+        user = findEmail(userid)
+        if user:
+            user['portrait'] = data
+            print 'portrait updated'
+            answer = 'succeed'
+        self.write(answer);
+        
+        
 # verificatino handler
 class VerificationHandler(tornado.web.RequestHandler):
     emailServr = EmailServer();
-
     def get(self):
         print 'get request received..'
         self.write("hello client");
@@ -199,11 +221,6 @@ class VerificationHandler(tornado.web.RequestHandler):
         else:
             oldUser = findEmail(userid);
             if oldUser is None:
-                oldUsername = oldUser['user_name'];
-                answer['response'] = 'oldUser';
-                answer['oldUsername'] = str(oldUsername);
-                print 'old user returned'
-            else:
                 documentToInsert = {
                     'user_id':userid,
                     'user_name':userName,
@@ -216,6 +233,12 @@ class VerificationHandler(tornado.web.RequestHandler):
                 users_collection.insert_one(documentToInsert);
                 answer['response'] = 'registed';
                 print 'new user registered %s' % userid;
+            else:
+                users_collection.find_one_and_update({'user_id':userid},{'$set':{'user_name':userName}});
+                answer['response'] = 'oldUser';
+                answer['oldUserMongoID'] = oldUser['_id']; 
+                print 'old user returned'
+
         self.write(json.dumps(answer));
                 
     def post(self):
@@ -241,7 +264,7 @@ if __name__ == "__main__":
                 (r'/test', TestHandler),
                 (r'/register', VerificationHandler),
                 (r'/info',InfoSearchHandler),
-                
+                (r'/upload',UploadHanler),
             ]);
 
     app.listen(options.port);

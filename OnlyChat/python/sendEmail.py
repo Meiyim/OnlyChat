@@ -7,7 +7,7 @@ class EmailServer:
         self.from_host = "smtp.qq.com";
         self.from_port = 465;
         self.from_address = "362169764@qq.com";
-        self.from_passwd = "lxtsworld";
+        self.from_passwd = "gknrtkfiycdkbhba";
 
         try:
             self.server = smtplib.SMTP_SSL();
@@ -54,8 +54,6 @@ if __name__ == "__main__":
         print "succeed";
     else:
         print "Not good";
-
-
 
 
 
