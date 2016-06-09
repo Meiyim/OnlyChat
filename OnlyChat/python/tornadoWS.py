@@ -11,6 +11,8 @@ import json
 import re
 import pymongo
 from pymongo import MongoClient
+from bson.binary import Binary
+from bson.objectid import ObjectId
 
 
 from SendEmail import *
@@ -106,11 +108,13 @@ class InfoSearchHandler(tornado.web.RequestHandler):
                 answer['response'] = 'noSuchUser'
             elif searchResult['pair_id'] != None:
                 answer['response'] = 'userPaired'
+                answer['user_id'] = searchResult['user_id'];
             else:
                 #return status
                 answer['response'] = 'userAvailable'
                 answer['user_id'] = searchResult['user_id'];
                 answer['user_name'] = searchResult['user_name']
+                answer['downloadID'] = str(searchResult['_id']);
         self.write(json.dumps(answer));
 
     def handlePair(self,email,pairEmail):
@@ -139,7 +143,7 @@ class InfoSearchHandler(tornado.web.RequestHandler):
     def post(self):
         param_request_type = self.get_argument('request');
         param_id = self.get_argument('id');
-        param_pair_id = self.get_argument('pairId');
+        param_pair_id = self.get_argument('pairId','nil');
         print 'search request received %s: id = %s' % (param_request_type, param_id);
         if param_request_type == 'search':
             self.handleSearch(param_id)
@@ -154,21 +158,24 @@ class InfoSearchHandler(tornado.web.RequestHandler):
 class UploadHanler(tornado.web.RequestHandler):
     def get(self):
         downloadID = self.get_argument('downloadID');
-        user = users_collection.find_one(ObjectID(downloadID));
-        portraitData = uesr['portrait']
+        user = users_collection.find_one(ObjectId(downloadID));
+        portraitData = user['portrait']
         if portraitData:
             self.write(portraitData);
         
     def post(self):
         answer = 'wrong'
-        data = self.request.body;
+        data = Binary(self.request.body);
         userid =  self.request.headers["Filename"];
         # process file
-        user = findEmail(userid)
-        if user:
-            user['portrait'] = data
-            print 'portrait updated'
-            answer = 'succeed'
+        if len(data) > 4*1024*1024: #Todo: compress image locally
+            print 'file too large'
+            answer = 'portraitFileTooLarge'
+        else:
+            oldUser = users_collection.find_one_and_update({'user_id':userid},{'$set':{'portrait':data}});
+            if oldUser:
+                print 'portrait updated'
+                answer = 'succeed'
         self.write(answer);
         
         
@@ -236,7 +243,7 @@ class VerificationHandler(tornado.web.RequestHandler):
             else:
                 users_collection.find_one_and_update({'user_id':userid},{'$set':{'user_name':userName}});
                 answer['response'] = 'oldUser';
-                answer['oldUserMongoID'] = oldUser['_id']; 
+                #answer['oldUserMongoID'] = oldUser['_id']; 
                 print 'old user returned'
 
         self.write(json.dumps(answer));

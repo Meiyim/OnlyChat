@@ -57,14 +57,17 @@ class ViewController: JSQMessagesViewController {
         automaticallyScrollsToMostRecentMessage = true
 
         
-        defer{
-            doAfterDelay(0.5, closure: {
-                self.updateStatus();
-            })
-        }
+
         if let local = conversation.local {
             senderId = local.id;
             senderDisplayName = local.displayName;
+            /*
+            let path  = portraitPath();
+            if NSFileManager.defaultManager().fileExistsAtPath(path){
+                let image = UIImage(contentsOfFile: path)
+                imageView
+            }
+             */
             guard let remote = conversation.remote else{
                 status = .Unpaired
                 return;
@@ -91,6 +94,11 @@ class ViewController: JSQMessagesViewController {
         }
 
     
+    }
+    override func viewWillAppear(animated: Bool) {
+        doAfterDelay(0.5, closure: {
+            self.updateStatus();
+        })
     }
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
@@ -232,9 +240,5 @@ extension ViewController: RegistrationViewControllerDelegate{
         senderDisplayName = registerName;
         conversation.local = LoginID(id: registerID, name: registerName)
         overseer.save();
-        doAfterDelay(0.5){
-            self.performSegueWithIdentifier("showPair", sender: self);
-        }
-        
     }
 }

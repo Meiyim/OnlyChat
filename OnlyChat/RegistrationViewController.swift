@@ -23,7 +23,6 @@ class RegistrationViewController: UITableViewController {
     let indexPathForDisplayName = NSIndexPath(forRow: 0, inSection:1);
     let indexPathForSelectPhoto = NSIndexPath(forRow: 1, inSection: 1);
     
-    let portraitPath = documentDirectory() + ("/myPortrait.jpg");
     
     let REGISTRATION_SERVER_ADDRESS = "http://localhost:8888/register"
     let UPLOAD_ADDRESS = "http://localhost:8888/upload"
@@ -55,7 +54,7 @@ class RegistrationViewController: UITableViewController {
         guard let img = image else {
             return
         }
-        let localurl = portraitPath
+        let localurl = portraitPath()
         UIImageJPEGRepresentation(img, 1.0)?.writeToFile(localurl, atomically: true)
     }
     
@@ -167,7 +166,7 @@ class RegistrationViewController: UITableViewController {
                     case "registed":
                         fallthrough
                     case "oldUser":
-                        let downloadID = json["oldUserMongoID"] as? String
+                        //let downloadID = json["oldUserMongoID"] as? String
                         //assert(oldName==displayName)
                         /*
                         self.showAlert("Registration Suceeded, Welcome: \(displayName)", OKButton: "OK",handler:{ _ in
@@ -175,13 +174,8 @@ class RegistrationViewController: UITableViewController {
                                 self.delegate?.registrationViewController(self,registerID: id, registerName:  oldName);
                             })
                         })*/
-                        self.showAlert("Registration Complete, Welcome", OKButton: "OK"){ _ in
-                            if answer=="oldUser" && self.image == nil{
-                                self.downloadPortrait(downloadID!);
-                            }else{
-                                self.uploadPortrait(id);
-                            }
-                        }
+                        self.delegate?.registrationViewController(self,registerID: id, registerName:  displayName);
+                        self.uploadPortrait(id);
         
                     case "codeWrong":
                         self.showAlert("Invalide Varification Code", OKButton: "OK", handler: nil)
@@ -200,17 +194,7 @@ class RegistrationViewController: UITableViewController {
         
         UIApplication.sharedApplication().networkActivityIndicatorVisible = true
     }
-    private func downloadPortrait(id: String){
-        downUploadRequest?.cancel();
-        downUploadRequest = Alamofire.download(.GET, UPLOAD_ADDRESS,parameters: ["downloadID":id]){ _ in
-            
-            return NSURL(fileURLWithPath: self.portraitPath)
-        }.response{  _,_,_,err in
-            if let e = err {
-                self.showAlert("download error", OKButton: "OK")
-            }
-        }
-    }
+
     private func uploadPortrait(email: String){
         guard let img = image else{
             assert(false)
@@ -233,13 +217,16 @@ class RegistrationViewController: UITableViewController {
                 }
                 dispatch_async(dispatch_get_main_queue()){
                     UIApplication.sharedApplication().networkActivityIndicatorVisible = false
-                    let answer =  response.result.value!
-                    if answer == "succeed"{
-                        self.showAlert("upload succeed", OKButton: "OK", handler: nil)
-                        self.saveImageToLocal();
-                    }else{
-                        self.showAlert("something is wrong with the server: \(answer)", OKButton: "OK", handler: nil)
+                    if let answer =  response.result.value {
+                        if answer == "succeed"{
+                            self.showAlert("Registration Succeed, Welcome", OKButton: "OK", handler: { _ in
+                                self.saveImageToLocal();
+                                self.dismissViewControllerAnimated(true, completion: nil)
+                            })
+                            return
+                        }
                     }
+                    self.showAlert("something is wrong with the server", OKButton: "OK", handler: nil)
                 }
                 //debugPrint(response)
             })

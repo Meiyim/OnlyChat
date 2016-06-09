@@ -24,16 +24,41 @@
                             <searchBar contentMode="redraw" translatesAutoresizingMaskIntoConstraints="NO" id="30k-Qf-cqC">
                                 <rect key="frame" x="0.0" y="64" width="600" height="44"/>
                                 <textInputTraits key="textInputTraits"/>
+                                <connections>
+                                    <outlet property="delegate" destination="auN-Cg-vzJ" id="cSk-fn-iYQ"/>
+                                </connections>
                             </searchBar>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="(userName)" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ckK-JX-dKC">
+                                <rect key="frame" x="255" y="152" width="90" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="(user_id)" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="H8N-1D-YmN">
+                                <rect key="frame" x="267" y="217" width="66" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="o1F-vP-7p5">
+                                <rect key="frame" x="285" y="480" width="30" height="30"/>
+                                <state key="normal" title="Pair"/>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
+                            <constraint firstItem="H8N-1D-YmN" firstAttribute="centerX" secondItem="xiW-Rc-BZJ" secondAttribute="centerX" id="0LO-Bd-i47"/>
                             <constraint firstItem="aEa-mV-NiM" firstAttribute="top" secondItem="9uC-Ce-vfu" secondAttribute="bottom" id="3Ua-Js-e8f"/>
                             <constraint firstItem="30k-Qf-cqC" firstAttribute="leading" secondItem="xiW-Rc-BZJ" secondAttribute="leadingMargin" constant="-20" id="5iz-mh-5zU"/>
+                            <constraint firstItem="ckK-JX-dKC" firstAttribute="centerX" secondItem="xiW-Rc-BZJ" secondAttribute="centerX" id="JJW-fy-JB5"/>
+                            <constraint firstItem="H8N-1D-YmN" firstAttribute="top" secondItem="ckK-JX-dKC" secondAttribute="bottom" constant="44" id="OLP-yu-7vl"/>
+                            <constraint firstItem="o1F-vP-7p5" firstAttribute="centerX" secondItem="xiW-Rc-BZJ" secondAttribute="centerX" id="QnY-B7-8d6"/>
                             <constraint firstAttribute="trailing" secondItem="aEa-mV-NiM" secondAttribute="trailing" id="XWS-H8-yoI"/>
+                            <constraint firstItem="o1F-vP-7p5" firstAttribute="top" secondItem="aEa-mV-NiM" secondAttribute="bottom" constant="-120" id="tbH-4l-1T3"/>
                             <constraint firstAttribute="trailingMargin" secondItem="30k-Qf-cqC" secondAttribute="trailing" constant="-20" id="vjV-hL-2zJ"/>
                             <constraint firstItem="30k-Qf-cqC" firstAttribute="top" secondItem="9uC-Ce-vfu" secondAttribute="bottom" id="w2B-WC-loh"/>
                             <constraint firstItem="aEa-mV-NiM" firstAttribute="leading" secondItem="xiW-Rc-BZJ" secondAttribute="leading" id="x9i-Hr-l9f"/>
+                            <constraint firstItem="ckK-JX-dKC" firstAttribute="top" secondItem="30k-Qf-cqC" secondAttribute="bottom" constant="44" id="yuG-5v-ckp"/>
                             <constraint firstItem="oUW-ga-iC5" firstAttribute="top" secondItem="aEa-mV-NiM" secondAttribute="bottom" id="zMV-Y6-mbq"/>
                         </constraints>
                     </view>
@@ -42,7 +67,10 @@
                     </navigationItem>
                     <connections>
                         <outlet property="imageView" destination="aEa-mV-NiM" id="H9g-lg-itR"/>
+                        <outlet property="pairButton" destination="o1F-vP-7p5" id="LnC-4u-BJH"/>
                         <outlet property="searchBar" destination="30k-Qf-cqC" id="R9w-BD-WUe"/>
+                        <outlet property="searchedIDLabel" destination="H8N-1D-YmN" id="OXP-17-cN7"/>
+                        <outlet property="searchedNameLabel" destination="ckK-JX-dKC" id="QLu-8O-6RC"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="sFo-ES-Ui8" userLabel="First Responder" sceneMemberID="firstResponder"/>

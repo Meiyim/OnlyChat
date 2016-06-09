@@ -14,6 +14,13 @@ func documentDirectory() -> String {
 func dataFilePath()->String {
     return documentDirectory()+"/OnlyChat.plist"
 }
+func portraitPath()->String{
+    return documentDirectory() + ("/myPortrait.jpg");
+}
+func backGroundPath()->String{
+    return documentDirectory() + ("/backGround.jpg");
+}
+
 func doAfterDelay(seconds: Double, closure: ()->()){ // GCD framework!
     let when = dispatch_time(DISPATCH_TIME_NOW, Int64(seconds * Double(NSEC_PER_SEC)));
     dispatch_after(when, dispatch_get_main_queue(), closure);
