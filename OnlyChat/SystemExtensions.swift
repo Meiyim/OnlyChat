@@ -20,6 +20,9 @@ func portraitPath()->String{
 func backGroundPath()->String{
     return documentDirectory() + ("/backGround.jpg");
 }
+func tempPath()->String{
+    return documentDirectory() + ("/tmp.jpg");
+}
 
 func doAfterDelay(seconds: Double, closure: ()->()){ // GCD framework!
     let when = dispatch_time(DISPATCH_TIME_NOW, Int64(seconds * Double(NSEC_PER_SEC)));

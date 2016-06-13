@@ -11,7 +11,7 @@ import JSQMessagesViewController
 import Starscream
 
 class Overseer{//singular pattern
-    let socket = WebSocket(url: NSURL(string: "ws://chenxuyi.cn:8888/ws")!, protocols: ["chat", "superchat"]);
+    let socket = WebSocket(url: NSURL(string: "ws://localhost:8888/ws")!, protocols: ["chat", "superchat"]);
     
     var conversation: Conversation! = nil
     
@@ -80,13 +80,16 @@ class LoginID:NSObject, NSCoding{
 class Conversation: NSObject,NSCoding{
     var local:LoginID! = nil;
     var remote:LoginID? = nil;
+    var remoteHash: String? = nil;
     func encodeWithCoder(aCoder: NSCoder) {
         aCoder.encodeObject(local, forKey: "local")
         aCoder.encodeObject(remote, forKey: "remote")
+        aCoder.encodeObject(remoteHash, forKey: "remoteHash")
     }
     required init?(coder aDecoder: NSCoder) {
         local = aDecoder.decodeObjectForKey("local") as! LoginID
         remote = aDecoder.decodeObjectForKey("remote") as? LoginID
+        remoteHash = aDecoder.decodeObjectForKey("remoteHash") as? String
     }
     override init(){
         super.init();
