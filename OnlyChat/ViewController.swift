@@ -10,6 +10,7 @@ import UIKit
 import JSQMessagesViewController
 import Starscream
 import Alamofire
+import Dodo
 
 enum MainViewControllerStatus{
     case Unregistered
@@ -19,6 +20,10 @@ enum MainViewControllerStatus{
     case Good
 }
 
+class OnlyChatCommunicationProtocol{
+    static var realTimeChange = "c";
+    static var message = "m"
+}
 
 
 class ViewController: JSQMessagesViewController {
@@ -39,10 +44,13 @@ class ViewController: JSQMessagesViewController {
     */
     var incomingBubble: JSQMessagesBubbleImage! = nil
     var outgoingBubble: JSQMessagesBubbleImage! = nil
-    var suspendCell: JSQMessagesCollectionViewCell! = nil
     let PAIR_SERVER_ADDRESS = "http://localhost:8888/info";
     let UPLOAD_ADDRESS = "http://localhost:8888/upload"
     
+    //websocket related
+    var pendingMessageRemote = "";
+    var pendingMessageLocal = "";
+
     
     //MARK: - IBoutlet
     
@@ -64,24 +72,33 @@ class ViewController: JSQMessagesViewController {
         // For this Demo we will use Woz's ID
         // Anywhere that AvatarIDWoz is used you should replace with you currentUserVariable
         
+        //config background... load from user directory
         let background = UIImageView(frame: self.view.bounds)
         self.collectionView.backgroundView = background;
         imageView = background;
 
+        //config title View
         let titleView = ConversationHeaderView(frame: CGRect(x: 0, y: 0, width: 232, height: 44))
         self.navigationItem.titleView = titleView
         self.titleView = titleView;
         
-        self.messages = [JSQMessage(senderId:"fake",displayName: "fake",text: "someverylongsentencesthatfitthewidthofthescreen") ]
-        let id = NSIndexPath(forItem: 0, inSection: 0)
-        suspendCell = self.collectionView(self.collectionView, cellForItemAtIndexPath: id) as! JSQMessagesCollectionViewCell
-        self.messages.removeAll();
-        let b = suspendCell.bounds
-        let f = CGRect(x: 20, y: 84, width: b.width, height: 2*b.height);
-        suspendCell.layer.shadowOpacity = 1.0
-        suspendCell.layer.shadowOffset = CGSize(width: 3.0, height: 3.0)
-        suspendCell.clipsToBounds = false
-        suspendCell.frame = f;
+        //config dodoView
+        view.dodo.topLayoutGuide = topLayoutGuide
+        view.dodo.style.bar.onTap = {
+            print("Tap tap tap 🌻🌼🐁🍃")
+        }
+        view.dodo.style.bar.locationTop = true
+        view.dodo.style.bar.hideAfterDelaySeconds = 0
+        view.dodo.style.bar.debugMode = false
+        view.dodo.style.bar.hideOnTap = false
+        view.dodo.style.label.shadowColor = DodoColor.fromHexString("#00000050")
+        view.dodo.style.bar.backgroundColor = DodoColor.fromHexString("#0003AAE0")
+        
+        view.dodo.style.label.font = UIFont.preferredFontForTextStyle(UIFontTextStyleHeadline)
+        
+        view.dodo.style.bar.animationShow = DodoAnimations.SlideVertically.show;
+        view.dodo.style.bar.animationHide = DodoAnimations.SlideVertically.hide
+
         
         //self.view.insertSubview(imageView, atIndex: 0)
         defer{
@@ -93,25 +110,7 @@ class ViewController: JSQMessagesViewController {
                 self.collectionView.layoutIfNeeded()
         }
         print("view did load")
-        doAfterDelay(2.0){
-            let frame = CGRect(x: 0 , y: 64, width: self.view.bounds.width, height: 132)
-            /*
-            let suspendView = UIImageView(frame: frame)
-            suspendView.image = self.incomingBubble.messageBubbleImage!
-            suspendView.layer.shadowOpacity = 1.0;
-            suspendView.layer.shadowColor = UIColor.blackColor().CGColor
-            suspendView.layer.shadowOffset = CGSize(width: 3.0, height: 3.0)
-            */
-        //    let suspendView = UIView(frame: frame)
 
-           // suspendView.addSubview(cell)
-           // suspendView.backgroundColor = UIColor.blueColor();
-            self.view.addSubview(self.suspendCell)
-            doAfterDelay(0.5){
-                self.suspendCell.textView.text = "hello fucker, you are already fucked..."
-            }
-            print("view added")
-        }
         
         if let local = conversation.local {
             senderId = local.id;
@@ -173,7 +172,7 @@ class ViewController: JSQMessagesViewController {
         }
         // Pass the selected object to the new view controller.
     }
-    
+
     private func showAlert(title: String, OKButton: String,handler: ((UIAlertAction)->())? = nil){
         let alert = UIAlertController(title: title, message: "", preferredStyle: .Alert) //i18n
         let action1 = UIAlertAction(title: OKButton, style: .Destructive, handler: handler)
@@ -225,13 +224,16 @@ class ViewController: JSQMessagesViewController {
         //self.messages.append(JSQMessage(senderId: AvatarIdWoz, displayName: DisplayNameWoz, text: text))
         
         //check if server recv the message
+        self.sendMessage(text!)
         self.messages.append(JSQMessage(senderId: conversation?.local.id, displayName: conversation.local.displayName, text: text))
-        //shouldUseTempBubble = true;
         self.finishSendingMessageAnimated(true)
+        
+        //a fake reply
+        /*
         doAfterDelay(2.0){
             self.messages.append(JSQMessage(senderId: self.conversation?.remote?.id,displayName: self.conversation.remote?.displayName,text: "fuck you bitch"))
             self.finishReceivingMessage();
-        }
+        }*/
 
     }
     
@@ -372,7 +374,6 @@ class ViewController: JSQMessagesViewController {
 
 
 extension ViewController :WebSocketDelegate {
-
     //MARK: WebSocket Delegate
     func websocketDidConnect(ws: WebSocket) {
         print("websocket is connected")
@@ -398,12 +399,104 @@ extension ViewController :WebSocketDelegate {
     
     func websocketDidReceiveMessage(ws: WebSocket, text: String) {
         print("message received \(text)")
+        if let  msg = parseIncomingMessage(text){
+            showRealTimeChange(msg)
+        }
     }
     
     func websocketDidReceiveData(ws: WebSocket, data: NSData) {
         
     }
+    
+    //MARK: - websocket utility
+    private func sendMessage(msg:String){
+        let toSend = String(format:"%@,%@",
+                            OnlyChatCommunicationProtocol.message  ,msg);
+        overseer.socket.writeString(toSend);
+    }
+    private func sendRealTimeChange(range: NSRange, msg: String){
+        let toSend = String(format:"%@,%i,%i,%@",OnlyChatCommunicationProtocol.realTimeChange,range.location,range.length,msg);
+        //print(toSend);
+        overseer.socket.writeString(toSend);
+    }
+    private func showRealTimeChange(t:String){
+        guard let label = self.view.viewWithTag(3344) as? UILabel else{
+            //fatalError()
+            view.dodo.show(t)
+            return;
+        }
+        label.text = t;
+    }
+    private func parseIncomingMessage(incomingMsg: String)->String?{
+        var ret:String? = nil;
+        let parseRets = incomingMsg.componentsSeparatedByString(",");
+        if parseRets[0] == OnlyChatCommunicationProtocol.realTimeChange {
+            let range =  NSRange(location:Int(parseRets[1])!, length: Int(parseRets[2])!);
+            let text:String = parseRets[3];
+            let oldText: NSString = pendingMessageRemote;
+            let newText: NSString = oldText.stringByReplacingCharactersInRange(range, withString: text)
+            pendingMessageRemote = newText as String;
+            ret = String(newText);
+        }else if parseRets[0] == OnlyChatCommunicationProtocol.message {
+            ret = parseRets[1];
+            self.view.dodo.hide();
+        }
+        
+        return ret;
+    }
+    private func compareStrings(str1:String, and str2:String)->(NSRange,String)?{
+        let cs1 = str1.characters;
+        let cs2 = str2.characters;
+        
+        var iter1 = cs1.startIndex;
+        var iter2 = cs2.startIndex;
+        var iterStart1:String.CharacterView.Index!;
+        var iterStart2:String.CharacterView.Index!;
+        
+        
+        var lenHead = 0;
+        var lenEnd = 0;
+        while (iter1 != cs1.endIndex ) && (iter2 != cs2.endIndex) && (cs1[iter1]==cs2[iter2]) {
+            iter1 = iter1.successor();
+            iter2 = iter2.successor();
+            lenHead+=1;
+        }
+        iterStart1 = iter1;
+        iterStart2 = iter2;
+        iter1 = cs1.endIndex;
+        iter2 = cs2.endIndex;
+        while(iter1 != iterStart1) && (iter2 != iterStart2) && (cs1[iter1.predecessor()]==cs2[iter2.predecessor()]){
+            iter1=iter1.predecessor()
+            iter2=iter2.predecessor()
+            lenEnd+=1;
+        }
+        //return nil can avoid network communication
+        if(iter1 == iterStart1) && (iter2==iterStart2) {return nil}
+        
+        let range = NSRange(location: lenHead  ,length: cs1.count - lenHead - lenEnd);
+        let substr = str2.substringWithRange(iterStart2 ..< iter2);
+        
+        print("compare result \(substr)");
+        return (range,substr);
+        
+    }
+    override func textView(textView: UITextView, shouldChangeTextInRange range: NSRange, replacementText text: String) -> Bool{
+        
+        let oldText: NSString = textView.text!
+        let newText: NSString = oldText.stringByReplacingCharactersInRange(range, withString: text)
+        
+        if let retTup = compareStrings(pendingMessageLocal, and: String(newText)){
+            sendRealTimeChange(retTup.0, msg: retTup.1)
+        }
+        pendingMessageLocal = newText as String;
+        
+        return true;
+    }
+    
 }
+
+
+
 
 
 extension ViewController: RegistrationViewControllerDelegate{

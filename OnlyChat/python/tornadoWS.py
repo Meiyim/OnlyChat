@@ -90,7 +90,8 @@ class WSHandler(tornado.websocket.WebSocketHandler):
 
     def on_message(self, message):
         print "message received: %s, forwarding..." % message
-        self.forwardMessage(message);
+        self.write_message(message) #temporary a echo server
+        #self.forwardMessage(message);
 
 
 class TestHandler(tornado.web.RequestHandler):  # for browser tester
