@@ -27,47 +27,92 @@ class ViewController: JSQMessagesViewController {
     var status = MainViewControllerStatus.Unregistered;
     var downUploadRequest:Alamofire.Request?
     weak var imageView: UIImageView!
+    weak var titleView: ConversationHeaderView! = nil
+    
 
     //var shouldUseTempBubble = false;
-    
+    /*
     let incomingBubble = JSQMessagesBubbleImageFactory().incomingMessagesBubbleImageWithColor(UIColor.jsq_messageBubbleBlueColor())
     let outgoingBubble = JSQMessagesBubbleImageFactory().outgoingMessagesBubbleImageWithColor(UIColor.lightGrayColor())
     
     let fakeBubble = JSQMessagesBubbleImageFactory().outgoingMessagesBubbleImageWithColor(UIColor.clearColor())
+    */
+    var incomingBubble: JSQMessagesBubbleImage! = nil
+    var outgoingBubble: JSQMessagesBubbleImage! = nil
+    var suspendCell: JSQMessagesCollectionViewCell! = nil
     let PAIR_SERVER_ADDRESS = "http://localhost:8888/info";
     let UPLOAD_ADDRESS = "http://localhost:8888/upload"
+    
     
     //MARK: - IBoutlet
     
     //MARK: - View
     override func viewDidLoad() {
         super.viewDidLoad()
+        let template = UIImage(named: "bubble_incoming_tailless");
+        let factory = JSQMessagesBubbleImageFactory(bubbleImage: template!, capInsets: UIEdgeInsetsZero)
+        incomingBubble = factory.incomingMessagesBubbleImageWithColor(UIColor.jsq_messageBubbleBlueColor());
+        outgoingBubble = factory.outgoingMessagesBubbleImageWithColor(UIColor.jsq_messageBubbleLightGrayColor());
         
         //check if user exits
         //check if
-        
         //JSQMessage configuration
         self.inputToolbar?.contentView?.leftBarButtonItem = nil
-        
-        // This is how you remove Avatars from the messagesView
-        collectionView?.collectionViewLayout.incomingAvatarViewSize = .zero
-        collectionView?.collectionViewLayout.outgoingAvatarViewSize = .zero
-        
-        // This is a beta feature that mostly works but to make things more stable I have diabled it.
-        collectionView?.collectionViewLayout.springinessEnabled = false
+
         
         //Set the SenderId  to the current User
         // For this Demo we will use Woz's ID
         // Anywhere that AvatarIDWoz is used you should replace with you currentUserVariable
-        automaticallyScrollsToMostRecentMessage = true
         
         let background = UIImageView(frame: self.view.bounds)
         self.collectionView.backgroundView = background;
         imageView = background;
 
-        self.view.insertSubview(imageView, atIndex: 0)
+        let titleView = ConversationHeaderView(frame: CGRect(x: 0, y: 0, width: 232, height: 44))
+        self.navigationItem.titleView = titleView
+        self.titleView = titleView;
         
+        self.messages = [JSQMessage(senderId:"fake",displayName: "fake",text: "someverylongsentencesthatfitthewidthofthescreen") ]
+        let id = NSIndexPath(forItem: 0, inSection: 0)
+        suspendCell = self.collectionView(self.collectionView, cellForItemAtIndexPath: id) as! JSQMessagesCollectionViewCell
+        self.messages.removeAll();
+        let b = suspendCell.bounds
+        let f = CGRect(x: 20, y: 84, width: b.width, height: 2*b.height);
+        suspendCell.layer.shadowOpacity = 1.0
+        suspendCell.layer.shadowOffset = CGSize(width: 3.0, height: 3.0)
+        suspendCell.clipsToBounds = false
+        suspendCell.frame = f;
+        
+        //self.view.insertSubview(imageView, atIndex: 0)
+        defer{
+                self.collectionView?.collectionViewLayout.springinessEnabled = false
+                self.automaticallyScrollsToMostRecentMessage = true
+                self.collectionView?.collectionViewLayout.incomingAvatarViewSize = .zero
+                self.collectionView?.collectionViewLayout.outgoingAvatarViewSize = .zero
+                self.collectionView?.reloadData()
+                self.collectionView.layoutIfNeeded()
+        }
+        print("view did load")
+        doAfterDelay(2.0){
+            let frame = CGRect(x: 0 , y: 64, width: self.view.bounds.width, height: 132)
+            /*
+            let suspendView = UIImageView(frame: frame)
+            suspendView.image = self.incomingBubble.messageBubbleImage!
+            suspendView.layer.shadowOpacity = 1.0;
+            suspendView.layer.shadowColor = UIColor.blackColor().CGColor
+            suspendView.layer.shadowOffset = CGSize(width: 3.0, height: 3.0)
+            */
+        //    let suspendView = UIView(frame: frame)
 
+           // suspendView.addSubview(cell)
+           // suspendView.backgroundColor = UIColor.blueColor();
+            self.view.addSubview(self.suspendCell)
+            doAfterDelay(0.5){
+                self.suspendCell.textView.text = "hello fucker, you are already fucked..."
+            }
+            print("view added")
+        }
+        
         if let local = conversation.local {
             senderId = local.id;
             senderDisplayName = local.displayName;
@@ -78,19 +123,20 @@ class ViewController: JSQMessagesViewController {
             status = .Disconnected
             //update remote status
             performUpdateRemote(remote.id);
-
-            self.navigationItem.title = remote.displayName
-            //websocket connect
+            
+            titleView.setHeader(remote.displayName )
+            
+            //; connect
             overseer.socket.connect();
-            if !overseer.socket.isConnected {
-                status = .Disconnected
-                return
+
+            status = .Good
+            //test
+            doAfterDelay(0.3){
+                self.messages = makeConversation()
+                self.collectionView?.reloadData()
+                self.collectionView?.layoutIfNeeded()
             }
             
-            //test
-            self.messages = makeConversation()
-            self.collectionView?.reloadData()
-            self.collectionView?.layoutIfNeeded()
             return
         }else{
             //show registration page
@@ -99,14 +145,22 @@ class ViewController: JSQMessagesViewController {
             senderDisplayName = "";
             return;
         }
+
     
     }
     override func viewWillAppear(animated: Bool) {
-        doAfterDelay(0.5, closure: {
+        doAfterDelay(1, closure: {
             self.updateStatus();
         })
     }
-    
+    /*
+    override func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
+        let cell = super.collectionView(collectionView, cellForItemAtIndexPath: indexPath)
+        cell.backgroundColor = UIColor.redColor()
+        return cell
+    }*/
+    //override func collectionView
+ 
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         // Get the new view controller using segue.destinationViewController.
         if segue.identifier == "showRegister" {
@@ -127,14 +181,13 @@ class ViewController: JSQMessagesViewController {
         presentViewController(alert, animated: true, completion: nil);
     }
     func updateRemoteUI(){
-        navigationItem.title = conversation.remote?.displayName
+        self.titleView.setHeader(conversation.remote!.displayName)
         //update last login time
         //uodate last login location...
         //etc
     }
     
     func updateStatus(){
-        print("update status")
         switch status {
         case .Unregistered:
             //show a registration guide
@@ -142,6 +195,7 @@ class ViewController: JSQMessagesViewController {
                 _ in
                 self.performSegueWithIdentifier("showRegister", sender: self)
             })
+            print("update unregisted")
             break;
         case .Unpaired:
             //show reconnection guide
@@ -149,12 +203,15 @@ class ViewController: JSQMessagesViewController {
                 _ in
                 self.performSegueWithIdentifier("showPair", sender: self)
             })
+            print("update unpaired")
             break;
         case .Disconnected:
             showBadNetworkIndicator();
+            print("update disconnected")
             break;
         case .Good:
             //connected to WebSocket
+            print("update good")
             break;
         }
     }
@@ -171,14 +228,11 @@ class ViewController: JSQMessagesViewController {
         self.messages.append(JSQMessage(senderId: conversation?.local.id, displayName: conversation.local.displayName, text: text))
         //shouldUseTempBubble = true;
         self.finishSendingMessageAnimated(true)
-        /*
-        doAfterDelay(1){
-            self.messages.removeLast();
-            self.messages.append(JSQMessage(senderId: AvatarIdWoz, displayName: DisplayNameWoz, text: text))
-            self.collectionView?.reloadData()
-            self.shouldUseTempBubble = false;
+        doAfterDelay(2.0){
+            self.messages.append(JSQMessage(senderId: self.conversation?.remote?.id,displayName: self.conversation.remote?.displayName,text: "fuck you bitch"))
+            self.finishReceivingMessage();
         }
-        */
+
     }
     
     override func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -208,13 +262,14 @@ class ViewController: JSQMessagesViewController {
                 assertionFailure()
                 return nil
             }
-            return NSAttributedString(string: senderDisplayName)
-            
+            //return NSAttributedString(string: senderDisplayName)
+            return nil
         }
     }
     
     override func collectionView(collectionView: JSQMessagesCollectionView?, layout collectionViewLayout: JSQMessagesCollectionViewFlowLayout?, heightForMessageBubbleTopLabelAtIndexPath indexPath: NSIndexPath!) -> CGFloat {
-        return messages[indexPath.item].senderId == conversation.local.id ? 0 : kJSQMessagesCollectionViewCellLabelHeightDefault
+        //return messages[indexPath.item].senderId == conversation.local.id ? 0 : kJSQMessagesCollectionViewCellLabelHeightDefault
+        return 0
     }
     //MARK: NetWork utility
     private func downloadPortrait(id: String){
@@ -334,6 +389,10 @@ extension ViewController :WebSocketDelegate {
             print("websocket is disconnected: \(e.localizedDescription)")
         } else {
             print("websocket disconnected")
+        }
+        if !overseer.socket.isConnected {
+            status = .Disconnected
+            return
         }
     }
     

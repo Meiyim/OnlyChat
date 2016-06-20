@@ -22,6 +22,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let navi  = window!.rootViewController as! UINavigationController
         let vc = navi.viewControllers[0] as! ViewController;
         overseer.socket.delegate = vc;
+
         //check if server alive
         let conv = overseer.load()
         vc.conversation = conv;

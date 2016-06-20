@@ -116,7 +116,7 @@ func makeConversation()->[JSQMessage]{
     let message2:JSQMessage = JSQMessage(senderId: myid, displayName: myname, text: "It is simple, elegant, and easy to use. There are super sweet default settings, but you can customize like crazy")
     let message3:JSQMessage = JSQMessage(senderId: remoteid, displayName: remotename, text: "It even has data detectors. You    can call me tonight. My cell number is 123-456-7890. My website is www.hexedbits.com.")
     let message4:JSQMessage = JSQMessage(senderId: myid, displayName: myname, text: "JSQMessagesViewController is nearly an exact replica of the iOS Messages App. And perhaps, better.")
-    let message5:JSQMessage = JSQMessage(senderId: remoteid, displayName: remotename, text: "It is unit-tested, free, open-source, and documented.")
+    let message5:JSQMessage = JSQMessage(senderId: remoteid, displayName: remotename, text: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
 
     let conversation = [message, message2,message3, message4, message5]
     return conversation

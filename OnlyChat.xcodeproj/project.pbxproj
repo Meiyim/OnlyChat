@@ -11,6 +11,7 @@
 		962F51291CEF100F007E5F20 /* DataStructure.swift in Sources */ = {isa = PBXBuildFile; fileRef = 962F51281CEF100F007E5F20 /* DataStructure.swift */; };
 		962F512C1CEF39EA007E5F20 /* SystemExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 962F512B1CEF39EA007E5F20 /* SystemExtensions.swift */; };
 		962F51301CEF4872007E5F20 /* RegistrationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 962F512F1CEF4872007E5F20 /* RegistrationViewController.swift */; };
+		965AB3FD1D12667600418A1E /* ConversationHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 965AB3FC1D12667600418A1E /* ConversationHeaderView.swift */; };
 		965ED92A1CEDEC950068CB29 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 965ED9291CEDEC950068CB29 /* AppDelegate.swift */; };
 		965ED92C1CEDEC950068CB29 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 965ED92B1CEDEC950068CB29 /* ViewController.swift */; };
 		965ED92F1CEDEC950068CB29 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 965ED92D1CEDEC950068CB29 /* Main.storyboard */; };
@@ -46,6 +47,7 @@
 		962F51281CEF100F007E5F20 /* DataStructure.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataStructure.swift; sourceTree = "<group>"; };
 		962F512B1CEF39EA007E5F20 /* SystemExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SystemExtensions.swift; sourceTree = "<group>"; };
 		962F512F1CEF4872007E5F20 /* RegistrationViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RegistrationViewController.swift; sourceTree = "<group>"; };
+		965AB3FC1D12667600418A1E /* ConversationHeaderView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConversationHeaderView.swift; sourceTree = "<group>"; };
 		965ED9261CEDEC950068CB29 /* OnlyChat.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OnlyChat.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		965ED9291CEDEC950068CB29 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		965ED92B1CEDEC950068CB29 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -125,6 +127,7 @@
 				96F8E1511D002E30001A2B26 /* python */,
 				965ED9291CEDEC950068CB29 /* AppDelegate.swift */,
 				965ED92B1CEDEC950068CB29 /* ViewController.swift */,
+				965AB3FC1D12667600418A1E /* ConversationHeaderView.swift */,
 				965ED92D1CEDEC950068CB29 /* Main.storyboard */,
 				965ED9301CEDEC950068CB29 /* Assets.xcassets */,
 				965ED9321CEDEC950068CB29 /* LaunchScreen.storyboard */,
@@ -351,6 +354,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				962F51291CEF100F007E5F20 /* DataStructure.swift in Sources */,
+				965AB3FD1D12667600418A1E /* ConversationHeaderView.swift in Sources */,
 				965ED92C1CEDEC950068CB29 /* ViewController.swift in Sources */,
 				962F512C1CEF39EA007E5F20 /* SystemExtensions.swift in Sources */,
 				965ED92A1CEDEC950068CB29 /* AppDelegate.swift in Sources */,
