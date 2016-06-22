@@ -66,32 +66,77 @@ def usernameIsGood(name):
 
     return True
 
+class OnlyChatCommunicationProtocol:
+    remoteStatus = 's'
+    realTimeChange = 'c'
+    message = 'm'
+
 
 # tornado request handler...
 class WSHandler(tornado.websocket.WebSocketHandler):
-    clients = set();  # multiply instance might be generated. set this to static param
+    #tornado is a single threaded app...  assuming _THREAD_ _SAFE_
+    clients = {};  # multiply instance might be generated. set this to static param
+    unreadMsgs = {};
 
     # instance property
     pair = None;
+    pairid = '';
+    userid = '';
 
     def open(self):
-        print 'new connection arrived'
-        self.write_message("Help\n Connection was accepted");
-        WSHandler.clients.add(self);
-        self.pair = self;
+        self.userid = self.request.headers['user_id']
+        print 'new connection arrived : %s' % self.userid
+        self.write_message("Connection was accepted");
+        WSHandler.clients[self.userid] = self;
+        user = findEmail(self.userid);
+        self.pairid = user['pair_id']
+        WSHandler.unreadMsgs[self.pairid] = []
+        self.pair  = WSHandler.clients.get(self.pairid)
+        #using customed communication protocol...
+        if self.pair is None : #pair is offline
+            self.write_message('%s,%s' %(OnlyChatCommunicationProtocol.remoteStatus,'n'));
+        else:
+            self.write_message('%s,%s' %(OnlyChatCommunicationProtocol.remoteStatus,'y'));
+        #checkt & send unread Msgs
+        msgs = findEmail(self.pairid)['unread_Msgs'];
+        msgsInServer = WSHandler.unreadMsgs.get(self.userid); 
+        if msgsInServer is not None:
+            msgs += msgsInServer;
+        if len(msgs) == 0:
+            pass
+        else:
+            print 'you have %d unread msgs...' % len(msgs)
+            for msg in msgs:
+                self.write_message('%s,%s' %(OnlyChatCommunicationProtocol.message,msg));
+            #reset unread msgs
+            print 'pretending the clear msgs...'
+            #users_collection.find_one_and_update({'user_id':self.pairid},{'$set':{'unread_Msgs':[]}})
+
         print "there are %d clients now" % len(WSHandler.clients);
 
     def on_close(self):
-        WSHandler.clients.remove(self);
-        print "connection closed... %d clients remain" % len(WSHandler.clients)
+        print "user: %s close ... %d clients remain" % (self.userid,len(WSHandler.clients))
+        del WSHandler.clients[self.userid]
+        msgs = findEmail(self.pairid)['unread_Msgs'];
+        msgs  += WSHandler.unreadMsgs[self.pairid]; 
+        print 'pretending to save unread msgs...'
+        #users_collection.find_one_and_update({'user_id':self.pairid},{'$set':{'unread_Msgs':msgs}})
+        del WSHandler.unreadMsgs[self.pairid]
 
     def forwardMessage(self, msg):
         self.pair.write_message(msg);
 
+    def saveUnreadMessage(self,msg):
+        WSHandler.unreadMsgs[self.pairid].append(msg);
+    
     def on_message(self, message):
         print "message received: %s, forwarding..." % message
-        self.write_message(message) #temporary a echo server
-        #self.forwardMessage(message);
+        #self.write_message(message) #temporary a echo server
+        if self.pair is None:
+            self.saveUnreadMessage(message);
+        else:
+            self.forwardMessage(message);
+            
 
 
 class TestHandler(tornado.web.RequestHandler):  # for browser tester

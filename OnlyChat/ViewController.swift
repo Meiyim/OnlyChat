@@ -21,6 +21,7 @@ enum MainViewControllerStatus{
 }
 
 class OnlyChatCommunicationProtocol{
+    static var remoteStatus = "s";
     static var realTimeChange = "c";
     static var message = "m"
 }
@@ -42,14 +43,18 @@ class ViewController: JSQMessagesViewController {
     
     let fakeBubble = JSQMessagesBubbleImageFactory().outgoingMessagesBubbleImageWithColor(UIColor.clearColor())
     */
+    //conversationUI
     var incomingBubble: JSQMessagesBubbleImage! = nil
     var outgoingBubble: JSQMessagesBubbleImage! = nil
     let PAIR_SERVER_ADDRESS = "http://localhost:8888/info";
     let UPLOAD_ADDRESS = "http://localhost:8888/upload"
+    var backgroundImage:UIImage! = nil;
+    var backgroundImageMono:UIImage! = nil;
     
     //websocket related
     var pendingMessageRemote = "";
     var pendingMessageLocal = "";
+    var remoteIsOnline = false;
 
     
     //MARK: - IBoutlet
@@ -93,9 +98,7 @@ class ViewController: JSQMessagesViewController {
         view.dodo.style.bar.hideOnTap = false
         view.dodo.style.label.shadowColor = DodoColor.fromHexString("#00000050")
         view.dodo.style.bar.backgroundColor = DodoColor.fromHexString("#0003AAE0")
-        
         view.dodo.style.label.font = UIFont.preferredFontForTextStyle(UIFontTextStyleHeadline)
-        
         view.dodo.style.bar.animationShow = DodoAnimations.SlideVertically.show;
         view.dodo.style.bar.animationHide = DodoAnimations.SlideVertically.hide
 
@@ -120,20 +123,23 @@ class ViewController: JSQMessagesViewController {
                 return;
             }
             status = .Disconnected
+            //set init value for remote;
+            self.loadBackGround()
+            updateRemoteUI();
+            
             //update remote status
             performUpdateRemote(remote.id);
             
-            titleView.setHeader(remote.displayName )
-            
-            //; connect
-            overseer.socket.connect();
-
-            status = .Good
+            // connect
+            doAfterDelay(0.5){
             //test
-            doAfterDelay(0.3){
                 self.messages = makeConversation()
                 self.collectionView?.reloadData()
                 self.collectionView?.layoutIfNeeded()
+                doAfterDelay(2.0){
+                    overseer.webSocketConnect();
+                }
+                self.status = .Good
             }
             
             return
@@ -179,13 +185,21 @@ class ViewController: JSQMessagesViewController {
         alert.addAction(action1)
         presentViewController(alert, animated: true, completion: nil);
     }
+    
+    //update navigation title and Black/White featrue
     func updateRemoteUI(){
         self.titleView.setHeader(conversation.remote!.displayName)
+        if remoteIsOnline{
+            imageView.image = backgroundImage;
+        }else{
+            imageView.image = backgroundImageMono;
+        }
         //update last login time
         //uodate last login location...
         //etc
     }
     
+    //call this to send warning or guidline
     func updateStatus(){
         switch status {
         case .Unregistered:
@@ -229,11 +243,11 @@ class ViewController: JSQMessagesViewController {
         self.finishSendingMessageAnimated(true)
         
         //a fake reply
-        /*
+        
         doAfterDelay(2.0){
             self.messages.append(JSQMessage(senderId: self.conversation?.remote?.id,displayName: self.conversation.remote?.displayName,text: "fuck you bitch"))
-            self.finishReceivingMessage();
-        }*/
+            self.finishReceivingMessageAnimated(true)
+        }
 
     }
     
@@ -290,6 +304,7 @@ class ViewController: JSQMessagesViewController {
                     //main queue closure
                     self.saveBackground(UIImage(CGImage:img))
                     self.loadBackGround();
+                    self.updateRemoteUI();
     
                 })
         }
@@ -313,10 +328,9 @@ class ViewController: JSQMessagesViewController {
                     
                     assert(self.conversation.remote?.id == remoteid)
                     UIApplication.sharedApplication().networkActivityIndicatorVisible = false
-                    self.updateRemoteUI()
                     if self.conversation.remoteHash == hash{
+                        self.updateRemoteUI()
                         //do nothing
-                        self.loadBackGround()
                     }else{
                         //download new background
                         self.downloadPortrait(id)
@@ -330,11 +344,12 @@ class ViewController: JSQMessagesViewController {
         showAlert("No Network Connection!", OKButton: "retry")
     }
     //MARK: - utility
+    //load image wont load the image to imageView, this needs to be done in updateRemoteUI
     func loadBackGround(){
         let path  = backGroundPath();
         if NSFileManager.defaultManager().fileExistsAtPath(path){
-            let image = UIImage(contentsOfFile: path)
-            imageView.image = image
+            backgroundImage = UIImage(contentsOfFile: path)
+            backgroundImageMono = monoImage(backgroundImage)
         }
     }
     func clearTemp(){
@@ -370,6 +385,15 @@ class ViewController: JSQMessagesViewController {
             })
         }
     }
+    private func monoImage(img: UIImage)->UIImage{
+        let sourceImage = CIImage(image: img)!
+        let filter = CIFilter(name: "CIPhotoEffectMono")!
+        filter.setDefaults();
+        filter.setValue(sourceImage, forKey: kCIInputImageKey)
+        let context = CIContext(options: nil)
+        let outCG = context.createCGImage(filter.outputImage!, fromRect: filter.outputImage!.extent)
+        return UIImage(CGImage: outCG)
+    }
 }
 
 
@@ -399,9 +423,7 @@ extension ViewController :WebSocketDelegate {
     
     func websocketDidReceiveMessage(ws: WebSocket, text: String) {
         print("message received \(text)")
-        if let  msg = parseIncomingMessage(text){
-            showRealTimeChange(msg)
-        }
+        parseIncomingMessage(text)
     }
     
     func websocketDidReceiveData(ws: WebSocket, data: NSData) {
@@ -427,8 +449,8 @@ extension ViewController :WebSocketDelegate {
         }
         label.text = t;
     }
-    private func parseIncomingMessage(incomingMsg: String)->String?{
-        var ret:String? = nil;
+    private func parseIncomingMessage(incomingMsg: String){
+        var ret = ""
         let parseRets = incomingMsg.componentsSeparatedByString(",");
         if parseRets[0] == OnlyChatCommunicationProtocol.realTimeChange {
             let range =  NSRange(location:Int(parseRets[1])!, length: Int(parseRets[2])!);
@@ -437,12 +459,25 @@ extension ViewController :WebSocketDelegate {
             let newText: NSString = oldText.stringByReplacingCharactersInRange(range, withString: text)
             pendingMessageRemote = newText as String;
             ret = String(newText);
-        }else if parseRets[0] == OnlyChatCommunicationProtocol.message {
+            showRealTimeChange(ret)
+        }else if parseRets[0] == OnlyChatCommunicationProtocol.message {//a new arrival message
             ret = parseRets[1];
             self.view.dodo.hide();
+            self.messages.append(JSQMessage(senderId: self.conversation?.remote?.id,displayName: self.conversation.remote?.displayName,text: ret))
+            print("number of msgs: \(messages.count)")
+            self.finishReceivingMessageAnimated(true)
+        }else if parseRets[0] == OnlyChatCommunicationProtocol.remoteStatus{//remote status changed... on/offline
+            switch parseRets[1] {
+            case "y":
+                remoteIsOnline = true;
+            case "n":
+                remoteIsOnline = false;
+            default:
+                assertionFailure();
+            }
+            updateRemoteUI();
         }
         
-        return ret;
     }
     private func compareStrings(str1:String, and str2:String)->(NSRange,String)?{
         let cs1 = str1.characters;
@@ -476,7 +511,7 @@ extension ViewController :WebSocketDelegate {
         let range = NSRange(location: lenHead  ,length: cs1.count - lenHead - lenEnd);
         let substr = str2.substringWithRange(iterStart2 ..< iter2);
         
-        print("compare result \(substr)");
+        //print("compare result \(substr)");
         return (range,substr);
         
     }
@@ -484,12 +519,13 @@ extension ViewController :WebSocketDelegate {
         
         let oldText: NSString = textView.text!
         let newText: NSString = oldText.stringByReplacingCharactersInRange(range, withString: text)
-        
-        if let retTup = compareStrings(pendingMessageLocal, and: String(newText)){
-            sendRealTimeChange(retTup.0, msg: retTup.1)
+        if remoteIsOnline{
+            if let retTup = compareStrings(pendingMessageLocal, and: String(newText)){
+                sendRealTimeChange(retTup.0, msg: retTup.1)
+            }
+            pendingMessageLocal = newText as String;
         }
-        pendingMessageLocal = newText as String;
-        
+
         return true;
     }
     
