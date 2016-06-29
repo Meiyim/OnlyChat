@@ -70,6 +70,7 @@ class OnlyChatCommunicationProtocol:
     remoteStatus = 's'
     realTimeChange = 'c'
     message = 'm'
+    recvConfirm = 'r'
 
 
 # tornado request handler...
@@ -136,6 +137,8 @@ class WSHandler(tornado.websocket.WebSocketHandler):
             self.saveUnreadMessage(message);
         else:
             self.forwardMessage(message);
+        #send recv confirm
+        self.write_message('%s,%s'%(OnlyChatCommunicationProtocol.recvConfirm,'foo'));
             
 
 
@@ -305,8 +308,23 @@ class VerificationHandler(tornado.web.RequestHandler):
                 answer['response'] = 'oldUser';
                 # answer['oldUserMongoID'] = oldUser['_id'];
                 print 'old user returned'
-
         self.write(json.dumps(answer));
+
+    def unpair(self, userid):
+        answer = 'wrong'
+        if not emailIsValid(userid):
+            pass
+        if not emailIsTaken(userid):
+            pass
+        else:
+            #return the record before udpate... so pair_id is valid
+            user = users_collection.find_one_and_update({'user_id':userid},{'$set':{'pair_id':None}});
+            pairid = user['pair_id']
+            users_collection.find_one_and_update({'user_id':pairid},{'$set':{'pair_id':None}});
+            answer = 'done'
+        self.write(answer);
+
+        
 
     def post(self):
         param_request_type = self.get_argument('request');
@@ -319,6 +337,8 @@ class VerificationHandler(tornado.web.RequestHandler):
             self.sendCode(param_id)
         elif param_request_type == 'register':
             self.register(param_id, param_name, param_code);
+        elif param_request_type == 'unpair':
+            self.unpair(param_id);
         else:
             print 'request cannot handled: %s' % param_request_type
 

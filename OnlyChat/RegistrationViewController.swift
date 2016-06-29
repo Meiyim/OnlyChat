@@ -12,6 +12,7 @@ import Alamofire
 
 protocol RegistrationViewControllerDelegate{
     func registrationViewController(controller: RegistrationViewController,registerID: String, registerName: String);
+    func compreeImg(img:UIImage) -> UIImage;
 }
 
 class RegistrationViewController: UITableViewController {
@@ -24,8 +25,7 @@ class RegistrationViewController: UITableViewController {
     let indexPathForSelectPhoto = NSIndexPath(forRow: 1, inSection: 1);
     
     
-    let REGISTRATION_SERVER_ADDRESS = "http://localhost:8888/register"
-    let UPLOAD_ADDRESS = "http://localhost:8888/upload"
+
     
     var delegate: RegistrationViewControllerDelegate?
     var image: UIImage?
@@ -196,9 +196,10 @@ class RegistrationViewController: UITableViewController {
     }
 
     private func uploadPortrait(email: String){
-        guard let img = image else{
+        guard let _img = image else{
             assert(false)
         }
+        let img = delegate!.compreeImg(_img)
         downUploadRequest?.cancel()
         var data: NSData! = nil
         if let _d = UIImageJPEGRepresentation(img, 1.0){

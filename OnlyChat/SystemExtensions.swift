@@ -7,6 +7,16 @@
 //
 
 import Foundation
+
+let SERVER_ADDRESS = "http://chenxuyi.cn:8888"
+let PAIR_SERVER_ADDRESS = SERVER_ADDRESS+"/info";
+let UPLOAD_ADDRESS = SERVER_ADDRESS+"/upload"
+let REGISTRATION_SERVER_ADDRESS = SERVER_ADDRESS+"/register"
+let WEBSOCKET_ADDRESS = SERVER_ADDRESS + "/ws"
+
+
+
+
 func documentDirectory() -> String {
     let paths = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)
     return paths[0]

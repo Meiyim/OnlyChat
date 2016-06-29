@@ -19,6 +19,7 @@
 		965ED9341CEDEC950068CB29 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 965ED9321CEDEC950068CB29 /* LaunchScreen.storyboard */; };
 		965ED93F1CEDEC950068CB29 /* OnlyChatTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 965ED93E1CEDEC950068CB29 /* OnlyChatTests.swift */; };
 		965ED94A1CEDEC950068CB29 /* OnlyChatUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 965ED9491CEDEC950068CB29 /* OnlyChatUITests.swift */; };
+		966DD9921D1BDB5F0040A95B /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 966DD9911D1BDB5F0040A95B /* SettingsViewController.swift */; };
 		96F8E1521D002E30001A2B26 /* python in Resources */ = {isa = PBXBuildFile; fileRef = 96F8E1511D002E30001A2B26 /* python */; };
 		96FC67D61D01B48800D278AA /* PairViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96FC67D51D01B48800D278AA /* PairViewController.swift */; };
 /* End PBXBuildFile section */
@@ -61,6 +62,7 @@
 		965ED9451CEDEC950068CB29 /* OnlyChatUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = OnlyChatUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		965ED9491CEDEC950068CB29 /* OnlyChatUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnlyChatUITests.swift; sourceTree = "<group>"; };
 		965ED94B1CEDEC950068CB29 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		966DD9911D1BDB5F0040A95B /* SettingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
 		96F8E1511D002E30001A2B26 /* python */ = {isa = PBXFileReference; lastKnownFileType = folder; path = python; sourceTree = "<group>"; };
 		96FC67D51D01B48800D278AA /* PairViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PairViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -136,6 +138,7 @@
 				962F512B1CEF39EA007E5F20 /* SystemExtensions.swift */,
 				962F512F1CEF4872007E5F20 /* RegistrationViewController.swift */,
 				96FC67D51D01B48800D278AA /* PairViewController.swift */,
+				966DD9911D1BDB5F0040A95B /* SettingsViewController.swift */,
 			);
 			path = OnlyChat;
 			sourceTree = "<group>";
@@ -360,6 +363,7 @@
 				965ED92A1CEDEC950068CB29 /* AppDelegate.swift in Sources */,
 				96FC67D61D01B48800D278AA /* PairViewController.swift in Sources */,
 				962F51301CEF4872007E5F20 /* RegistrationViewController.swift in Sources */,
+				966DD9921D1BDB5F0040A95B /* SettingsViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -502,10 +506,13 @@
 			baseConfigurationReference = 2DF949C213A81D1408475A11 /* Pods-OnlyChat.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				INFOPLIST_FILE = OnlyChat/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = ChenXuyi.OnlyChat;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 			};
 			name = Debug;
 		};
@@ -514,10 +521,13 @@
 			baseConfigurationReference = 3BEDE509EFDC87F2A56307D5 /* Pods-OnlyChat.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				INFOPLIST_FILE = OnlyChat/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = ChenXuyi.OnlyChat;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 			};
 			name = Release;
 		};

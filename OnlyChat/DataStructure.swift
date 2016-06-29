@@ -11,9 +11,10 @@ import JSQMessagesViewController
 import Starscream
 
 class Overseer{//singular pattern
-    let socket = WebSocket(url: NSURL(string: "ws://localhost:8888/ws")!, protocols: ["chat", "superchat"]);
+    let socket = WebSocket(url: NSURL(string: WEBSOCKET_ADDRESS)!, protocols: ["chat", "superchat"]);
     
     var conversation: Conversation! = nil
+    var diaglog:[JSQMessage]! = nil
     
     init(){
     }
@@ -21,7 +22,18 @@ class Overseer{//singular pattern
     //WebSocket connect
     func webSocketConnect(){
         socket.headers["user_id"] = conversation.local.id;
+        print("connect websocket...")
         socket.connect();
+    }
+    //Accout management
+    func unpair(){
+        conversation.remote = nil;
+        diaglog.removeAll();
+        save();
+    }
+    func logoutAccout(){
+        unpair();
+        conversation.local = nil
     }
     
     //DataStorage
@@ -29,6 +41,7 @@ class Overseer{//singular pattern
         let worksLibData = NSMutableData();
         let archiver = NSKeyedArchiver(forWritingWithMutableData: worksLibData)
         archiver.encodeObject(conversation, forKey: "conversation")
+        archiver.encodeObject(diaglog, forKey: "dialog")
         archiver.finishEncoding();
         worksLibData.writeToFile(dataFilePath(), atomically: true);
         print("SAVE SUCCESSFULLY")
@@ -42,12 +55,16 @@ class Overseer{//singular pattern
             if let data = NSData(contentsOfFile: path){
                 let unarchiver = NSKeyedUnarchiver(forReadingWithData: data)
                 ret = unarchiver.decodeObjectForKey("conversation") as? Conversation;
+                diaglog = unarchiver.decodeObjectForKey("dialog") as? [JSQMessage]
                 unarchiver.finishDecoding();
                 print("LOAD SUCCESSFULLY")
             }
         }
         if ret == nil {
             ret = Conversation()
+        }
+        if diaglog == nil{
+            diaglog = [JSQMessage]();
         }
         conversation = ret;
         return ret;
@@ -92,7 +109,7 @@ class Conversation: NSObject,NSCoding{//including all saveable property...
         aCoder.encodeObject(remoteHash, forKey: "remoteHash")
     }
     required init?(coder aDecoder: NSCoder) {
-        local = aDecoder.decodeObjectForKey("local") as! LoginID
+        local = aDecoder.decodeObjectForKey("local") as? LoginID
         remote = aDecoder.decodeObjectForKey("remote") as? LoginID
         remoteHash = aDecoder.decodeObjectForKey("remoteHash") as? String
     }

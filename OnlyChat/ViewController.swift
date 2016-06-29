@@ -21,14 +21,17 @@ enum MainViewControllerStatus{
 }
 
 class OnlyChatCommunicationProtocol{
-    static var remoteStatus = "s";
+    static var remoteStatus = "s"; // y--'online',n=--'offline', u--'unpaired'
     static var realTimeChange = "c";
     static var message = "m"
+    static var recvConfirm = "r"
 }
 
 
 class ViewController: JSQMessagesViewController {
     var messages = [JSQMessage]()
+    var messagePointer = 0;
+    
     weak var conversation : Conversation! = nil;
     var status = MainViewControllerStatus.Unregistered;
     var downUploadRequest:Alamofire.Request?
@@ -46,8 +49,7 @@ class ViewController: JSQMessagesViewController {
     //conversationUI
     var incomingBubble: JSQMessagesBubbleImage! = nil
     var outgoingBubble: JSQMessagesBubbleImage! = nil
-    let PAIR_SERVER_ADDRESS = "http://localhost:8888/info";
-    let UPLOAD_ADDRESS = "http://localhost:8888/upload"
+
     var backgroundImage:UIImage! = nil;
     var backgroundImageMono:UIImage! = nil;
     
@@ -58,6 +60,11 @@ class ViewController: JSQMessagesViewController {
 
     
     //MARK: - IBoutlet
+    //MARK: - IBAction
+    
+    @IBAction func didPressSettingsButton(sender: UIBarButtonItem) {
+        performSegueWithIdentifier("showSettings", sender: self)
+    }
     
     //MARK: - View
     override func viewDidLoad() {
@@ -105,6 +112,7 @@ class ViewController: JSQMessagesViewController {
         
         //self.view.insertSubview(imageView, atIndex: 0)
         defer{
+                self.tryConnect();
                 self.collectionView?.collectionViewLayout.springinessEnabled = false
                 self.automaticallyScrollsToMostRecentMessage = true
                 self.collectionView?.collectionViewLayout.incomingAvatarViewSize = .zero
@@ -118,30 +126,25 @@ class ViewController: JSQMessagesViewController {
         if let local = conversation.local {
             senderId = local.id;
             senderDisplayName = local.displayName;
-            guard let remote = conversation.remote else{
+            guard conversation.remote != nil else{
                 status = .Unpaired
                 return;
             }
             status = .Disconnected
             //set init value for remote;
+            for chat in overseer.diaglog{
+                self.messages.append(chat)
+            }
+            self.messagePointer = messages.count;
             self.loadBackGround()
             updateRemoteUI();
             
-            //update remote status
-            performUpdateRemote(remote.id);
-            
-            // connect
-            doAfterDelay(0.5){
             //test
-                self.messages = makeConversation()
+            /*
+            doAfterDelay(0.5){
                 self.collectionView?.reloadData()
                 self.collectionView?.layoutIfNeeded()
-                doAfterDelay(2.0){
-                    overseer.webSocketConnect();
-                }
-                self.status = .Good
-            }
-            
+            }*/
             return
         }else{
             //show registration page
@@ -151,12 +154,13 @@ class ViewController: JSQMessagesViewController {
             return;
         }
 
-    
     }
     override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
+        /*
         doAfterDelay(1, closure: {
             self.updateStatus();
-        })
+        })*/
     }
     /*
     override func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
@@ -175,6 +179,12 @@ class ViewController: JSQMessagesViewController {
             let dest = (segue.destinationViewController as! UINavigationController).viewControllers[0] as! PairViewController
             dest.myEmail = senderId
             dest.delegate = self;
+        }else if segue.identifier == "showSettings"{
+            let dest = (segue.destinationViewController as! UINavigationController).viewControllers[0] as! SettingsViewController
+            let factor = backgroundImage.size.width / 80;
+            let scale = CGSize(width: backgroundImage.size.width / factor, height: backgroundImage.size.height / factor)
+            dest.thumbnail = self.getThumbnailofImage(backgroundImage, scale: scale)
+            dest.delegate = self;
         }
         // Pass the selected object to the new view controller.
     }
@@ -188,12 +198,22 @@ class ViewController: JSQMessagesViewController {
     
     //update navigation title and Black/White featrue
     func updateRemoteUI(){
-        self.titleView.setHeader(conversation.remote!.displayName)
-        if remoteIsOnline{
-            imageView.image = backgroundImage;
+        if let remote = conversation.remote{
+            self.titleView.setHeader(remote.displayName)
+            if let img = backgroundImage{
+                if let bimg = backgroundImageMono{
+                    if remoteIsOnline{
+                        imageView.image = img;
+                    }else{
+                        imageView.image = bimg;
+                    }
+                }
+            }
         }else{
-            imageView.image = backgroundImageMono;
+            self.titleView.setHeader("Welcome to OnlyChat")
+            imageView.image = nil;// or other default background
         }
+
         //update last login time
         //uodate last login location...
         //etc
@@ -204,22 +224,44 @@ class ViewController: JSQMessagesViewController {
         switch status {
         case .Unregistered:
             //show a registration guide
-            showAlert("please register first", OKButton: "OK", handler: {
-                _ in
-                self.performSegueWithIdentifier("showRegister", sender: self)
-            })
+            doAfterDelay(3.0){
+                if !(self===self.navigationController!.topViewController) { return };
+                self.showAlert("please register first", OKButton: "OK", handler: {
+                    _ in
+                    self.performSegueWithIdentifier("showRegister", sender: self)
+                })
+            }
+            overseer.socket.disconnect();
+            overseer.unpair();
+            self.messages.removeAll()
+            messagePointer = 0;
+            collectionView.reloadData()
+            collectionView.layoutIfNeeded();
             print("update unregisted")
             break;
         case .Unpaired:
             //show reconnection guide
-            showAlert("invite a frient to pair!", OKButton: "OK", handler: {
-                _ in
-                self.performSegueWithIdentifier("showPair", sender: self)
-            })
+            doAfterDelay(3.0){
+                if !(self===self.navigationController!.topViewController) { return };
+                self.showAlert("invite a frient to pair!", OKButton: "OK", handler: {
+                    _ in
+                    self.performSegueWithIdentifier("showPair", sender: self)
+                })
+            }
+            overseer.socket.disconnect();
+            overseer.unpair();
+            self.messages.removeAll()
+            messagePointer = 0;
+            collectionView.reloadData()
+            collectionView.layoutIfNeeded();
             print("update unpaired")
             break;
         case .Disconnected:
-            showBadNetworkIndicator();
+            //any thing could happen...
+            doAfterDelay(3.0){
+                if !(self===self.navigationController!.topViewController) { return };
+                self.showBadNetworkIndicator();
+            }
             print("update disconnected")
             break;
         case .Good:
@@ -239,15 +281,16 @@ class ViewController: JSQMessagesViewController {
         
         //check if server recv the message
         self.sendMessage(text!)
-        self.messages.append(JSQMessage(senderId: conversation?.local.id, displayName: conversation.local.displayName, text: text))
+        let msg = JSQMessage(senderId: conversation?.local.id, displayName: conversation.local.displayName, text: text)
+        self.messages.append(msg)
         self.finishSendingMessageAnimated(true)
         
         //a fake reply
-        
+        /*
         doAfterDelay(2.0){
             self.messages.append(JSQMessage(senderId: self.conversation?.remote?.id,displayName: self.conversation.remote?.displayName,text: "fuck you bitch"))
             self.finishReceivingMessageAnimated(true)
-        }
+        }*/
 
     }
     
@@ -312,36 +355,81 @@ class ViewController: JSQMessagesViewController {
     }
     
     
+    func performUpdateSelf(){
+        Alamofire.request(.POST,PAIR_SERVER_ADDRESS,parameters: ["request":"search","id":conversation.local.id])
+            .validate()
+            .responseJSON{ response in
+                UIApplication.sharedApplication().networkActivityIndicatorVisible = false
+                guard let json = response.result.value else{
+                    self.status = .Disconnected;
+                    self.updateStatus();
+                    return;
+                }
+                let isPaired = json["response"] as! String
+                assert(self.conversation.local.id == json["user_id"] as! String)
+                
+                if isPaired == "userPaired" {
+                    self.status = .Disconnected
+                    self.performUpdateRemote(json["pair_id"] as! String);
+                }else if isPaired == "userAvailable"{
+                    self.status = .Unpaired;
+                    self.updateRemoteUI();
+                    self.updateStatus();
+                }else{
+                    assert(false);
+                }
+                
+                //update last login time, location, .etc
+        }
+        UIApplication.sharedApplication().networkActivityIndicatorVisible = true
+    }
+    
     func performUpdateRemote(remoteid:String){
         Alamofire.request(.POST,PAIR_SERVER_ADDRESS,parameters: ["request":"search","id":remoteid])
             .validate()
             .responseJSON{ response in
-                if response.result.isFailure{
-                    self.showAlert("something's wrong with the server", OKButton: "OK")
+                UIApplication.sharedApplication().networkActivityIndicatorVisible = false
+                guard let json = response.result.value else{
+                    self.status = .Disconnected;
+                    self.updateRemoteUI();
+                    self.updateStatus();
+                    return;
                 }
-                if let json = response.result.value{
-                    let id = json["downloadID"] as! String
-                    let name = json["user_name"] as! String
-                    let hash = json["hash"] as! String
-                    self.conversation.remote?.displayName = name
-                    //update last login time, location, .etc
+                let id = json["downloadID"] as! String
+                let name = json["user_name"] as! String
+                let hash = json["hash"] as! String
+                self.conversation.remote?.displayName = name
+                //update last login time, location, .etc
+                
+                if let remote = self.conversation.remote{
+                    assert(remote.id == remoteid)
+                }else{
+                    self.conversation.remote = LoginID(id: remoteid, name: name)
+                    self.status = .Disconnected
                     
-                    assert(self.conversation.remote?.id == remoteid)
-                    UIApplication.sharedApplication().networkActivityIndicatorVisible = false
-                    if self.conversation.remoteHash == hash{
-                        self.updateRemoteUI()
-                        //do nothing
-                    }else{
-                        //download new background
-                        self.downloadPortrait(id)
-                    }
-                    self.status = .Good
                 }
+                
+                self.updateRemoteUI()
+                if self.conversation.remoteHash == hash{
+                    //do nothing
+                }else{
+                    //download new background
+                    self.downloadPortrait(id)
+                }
+                overseer.webSocketConnect();
+                
         }
         UIApplication.sharedApplication().networkActivityIndicatorVisible = true
     }
+    func tryConnect(){
+        assert(!overseer.socket.isConnected);
+        //update self status;
+        performUpdateSelf();
+    }
     func showBadNetworkIndicator(){
-        showAlert("No Network Connection!", OKButton: "retry")
+        showAlert("No Network Connection!", OKButton: "retry"){ _ in
+            self.tryConnect();
+        }
     }
     //MARK: - utility
     //load image wont load the image to imageView, this needs to be done in updateRemoteUI
@@ -394,6 +482,14 @@ class ViewController: JSQMessagesViewController {
         let outCG = context.createCGImage(filter.outputImage!, fromRect: filter.outputImage!.extent)
         return UIImage(CGImage: outCG)
     }
+    private func getThumbnailofImage(img:UIImage, scale: CGSize)->UIImage{
+        UIGraphicsBeginImageContext(scale)
+        img.drawInRect(CGRect(x: 0, y: 0, width: scale.width, height: scale.height));
+        let ret = UIGraphicsGetImageFromCurrentImageContext();
+        UIGraphicsEndImageContext();
+        return ret;
+    }
+    
 }
 
 
@@ -402,11 +498,14 @@ extension ViewController :WebSocketDelegate {
     func websocketDidConnect(ws: WebSocket) {
         print("websocket is connected")
         assert(conversation != nil);
-        //check if registered
-        
-        //check if paired
-        
-        //check if remote update status;
+        doAfterDelay(2.0){
+            if overseer.socket.isConnected {
+                self.status = .Good;
+                self.updateStatus();
+                return
+            }
+        }
+
     }
     
     func websocketDidDisconnect(ws: WebSocket, error: NSError?) {
@@ -415,10 +514,14 @@ extension ViewController :WebSocketDelegate {
         } else {
             print("websocket disconnected")
         }
-        if !overseer.socket.isConnected {
-            status = .Disconnected
-            return
+        doAfterDelay(2.0){
+            if !overseer.socket.isConnected {
+                self.status = .Disconnected
+                self.updateStatus();
+                return
+            }
         }
+
     }
     
     func websocketDidReceiveMessage(ws: WebSocket, text: String) {
@@ -463,19 +566,34 @@ extension ViewController :WebSocketDelegate {
         }else if parseRets[0] == OnlyChatCommunicationProtocol.message {//a new arrival message
             ret = parseRets[1];
             self.view.dodo.hide();
-            self.messages.append(JSQMessage(senderId: self.conversation?.remote?.id,displayName: self.conversation.remote?.displayName,text: ret))
+            let msg = JSQMessage(senderId: self.conversation?.remote?.id,displayName: self.conversation.remote?.displayName,text: ret)
+            self.messages.append(msg)
+            overseer.diaglog.append(msg)
             print("number of msgs: \(messages.count)")
             self.finishReceivingMessageAnimated(true)
+            
         }else if parseRets[0] == OnlyChatCommunicationProtocol.remoteStatus{//remote status changed... on/offline
             switch parseRets[1] {
             case "y":
                 remoteIsOnline = true;
             case "n":
                 remoteIsOnline = false;
+            case "u":
+                remoteIsOnline = false;
+                self.status = .Unpaired;
+                showAlert("seems that he/she unpaired you...", OKButton: "OK"){ _ in
+                    self.updateStatus();
+                    self.updateRemoteUI()
+                }
             default:
                 assertionFailure();
             }
             updateRemoteUI();
+        }else if parseRets[0] == OnlyChatCommunicationProtocol.recvConfirm{
+            overseer.diaglog.append(self.messages[ messagePointer ]);
+            print(overseer.diaglog.count)
+            messagePointer+=1;
+            print("msg confirmed")
         }
         
     }
@@ -543,16 +661,37 @@ extension ViewController: RegistrationViewControllerDelegate{
         conversation.local = LoginID(id: registerID, name: registerName)
         overseer.save();
     }
+    func compreeImg(img:UIImage) -> UIImage{
+        let rect = CGSize(width: 360, height: 640)//the screen size of iphone 6s plus
+        return self.getThumbnailofImage(img, scale: rect)
+    }
 }
 
 
 extension ViewController: PairViewControllerDelegate{
     func pairViewController(pairView: PairViewController, didPairedWithId id: String, name:String, backGround img: UIImage){
         self.status = .Good
-        conversation.remote = LoginID(id:id, name: name)
+        let pairremote = LoginID(id:id, name: name)
+        conversation.remote = pairremote
         saveBackground(img)
         overseer.save()
+        updateRemoteUI();
+        self.tryConnect()
         return
+    }
+}
+
+extension ViewController: SettingsViewControllerDelegate{
+    func accoutDidUnpair() {
+        self.updateRemoteUI();
+        self.status = .Unpaired;
+        self.updateStatus();
+    }
+    func accoutDidLogout(){
+        self.updateRemoteUI();
+        self.status = .Unregistered;
+        self.updateStatus();
+
     }
 }
 
