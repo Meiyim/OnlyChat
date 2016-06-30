@@ -179,6 +179,11 @@ class ViewController: JSQMessagesViewController {
             let dest = (segue.destinationViewController as! UINavigationController).viewControllers[0] as! PairViewController
             dest.myEmail = senderId
             dest.delegate = self;
+            let path  = portraitPath();
+            if NSFileManager.defaultManager().fileExistsAtPath(path){
+                let img = UIImage(contentsOfFile: path)
+                dest.image = img
+            }
         }else if segue.identifier == "showSettings"{
             let dest = (segue.destinationViewController as! UINavigationController).viewControllers[0] as! SettingsViewController
             let factor = backgroundImage.size.width / 80;
@@ -422,7 +427,7 @@ class ViewController: JSQMessagesViewController {
         UIApplication.sharedApplication().networkActivityIndicatorVisible = true
     }
     func tryConnect(){
-        assert(!overseer.socket.isConnected);
+        overseer.socket.disconnect();
         //update self status;
         performUpdateSelf();
     }
@@ -669,13 +674,16 @@ extension ViewController: RegistrationViewControllerDelegate{
 
 
 extension ViewController: PairViewControllerDelegate{
-    func pairViewController(pairView: PairViewController, didPairedWithId id: String, name:String, backGround img: UIImage){
-        self.status = .Good
-        let pairremote = LoginID(id:id, name: name)
-        conversation.remote = pairremote
-        saveBackground(img)
-        overseer.save()
-        updateRemoteUI();
+    func pairViewControllerDidPairedWithId( id: String?, name:String?){
+        self.status = .Disconnected
+        if let id = id{
+            if let name = name{
+                let pairremote = LoginID(id:id, name: name)
+                conversation.remote = pairremote
+                overseer.save()
+                updateRemoteUI();
+            }
+        }
         self.tryConnect()
         return
     }

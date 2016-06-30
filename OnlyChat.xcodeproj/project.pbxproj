@@ -20,6 +20,8 @@
 		965ED93F1CEDEC950068CB29 /* OnlyChatTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 965ED93E1CEDEC950068CB29 /* OnlyChatTests.swift */; };
 		965ED94A1CEDEC950068CB29 /* OnlyChatUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 965ED9491CEDEC950068CB29 /* OnlyChatUITests.swift */; };
 		966DD9921D1BDB5F0040A95B /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 966DD9911D1BDB5F0040A95B /* SettingsViewController.swift */; };
+		96F46A6C1D23F18A00702B22 /* ScannerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96F46A6B1D23F18A00702B22 /* ScannerViewController.swift */; };
+		96F46A6E1D23F85D00702B22 /* QRCode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96F46A6D1D23F85D00702B22 /* QRCode.swift */; };
 		96F8E1521D002E30001A2B26 /* python in Resources */ = {isa = PBXBuildFile; fileRef = 96F8E1511D002E30001A2B26 /* python */; };
 		96FC67D61D01B48800D278AA /* PairViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96FC67D51D01B48800D278AA /* PairViewController.swift */; };
 /* End PBXBuildFile section */
@@ -63,6 +65,8 @@
 		965ED9491CEDEC950068CB29 /* OnlyChatUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnlyChatUITests.swift; sourceTree = "<group>"; };
 		965ED94B1CEDEC950068CB29 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		966DD9911D1BDB5F0040A95B /* SettingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
+		96F46A6B1D23F18A00702B22 /* ScannerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScannerViewController.swift; sourceTree = "<group>"; };
+		96F46A6D1D23F85D00702B22 /* QRCode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QRCode.swift; sourceTree = "<group>"; };
 		96F8E1511D002E30001A2B26 /* python */ = {isa = PBXFileReference; lastKnownFileType = folder; path = python; sourceTree = "<group>"; };
 		96FC67D51D01B48800D278AA /* PairViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PairViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -134,11 +138,13 @@
 				965ED9301CEDEC950068CB29 /* Assets.xcassets */,
 				965ED9321CEDEC950068CB29 /* LaunchScreen.storyboard */,
 				965ED9351CEDEC950068CB29 /* Info.plist */,
+				96F46A6D1D23F85D00702B22 /* QRCode.swift */,
 				962F51281CEF100F007E5F20 /* DataStructure.swift */,
 				962F512B1CEF39EA007E5F20 /* SystemExtensions.swift */,
 				962F512F1CEF4872007E5F20 /* RegistrationViewController.swift */,
 				96FC67D51D01B48800D278AA /* PairViewController.swift */,
 				966DD9911D1BDB5F0040A95B /* SettingsViewController.swift */,
+				96F46A6B1D23F18A00702B22 /* ScannerViewController.swift */,
 			);
 			path = OnlyChat;
 			sourceTree = "<group>";
@@ -360,10 +366,12 @@
 				965AB3FD1D12667600418A1E /* ConversationHeaderView.swift in Sources */,
 				965ED92C1CEDEC950068CB29 /* ViewController.swift in Sources */,
 				962F512C1CEF39EA007E5F20 /* SystemExtensions.swift in Sources */,
+				96F46A6C1D23F18A00702B22 /* ScannerViewController.swift in Sources */,
 				965ED92A1CEDEC950068CB29 /* AppDelegate.swift in Sources */,
 				96FC67D61D01B48800D278AA /* PairViewController.swift in Sources */,
 				962F51301CEF4872007E5F20 /* RegistrationViewController.swift in Sources */,
 				966DD9921D1BDB5F0040A95B /* SettingsViewController.swift in Sources */,
+				96F46A6E1D23F85D00702B22 /* QRCode.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
